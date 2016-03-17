@@ -89,7 +89,9 @@ namespace zu {
     void do_symmetry_node(zu::symmetry_node * const node, int lvl);
     void do_variable_node(zu::variable_node * const node, int lvl);
     void do_function_declaration_node(zu::function_declaration_node * const node, int lvl);
-  };
+    void do_function_definition_node(zu::function_definition_node * const node, int lvl);
+      
+};
 
 } // zu
 

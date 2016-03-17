@@ -41,6 +41,7 @@ class identity_node;
 class rvalue_node; 
 class lvalue_node; 
 class assignment_node; 
+class function_definition_node; 
 class break_node; 
 class and_node; 
 class for_node; 
@@ -103,6 +104,7 @@ class if_else_node;
 #include "ast/rvalue_node.h"
 #include "ast/lvalue_node.h"
 #include "ast/assignment_node.h"
+#include "ast/function_definition_node.h"
 #include "ast/break_node.h"
 #include "ast/and_node.h"
 #include "ast/for_node.h"
