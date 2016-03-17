@@ -219,16 +219,6 @@ void zu::postfix_writer::do_print_node(zu::print_node * const node, int lvl) {
 
 //---------------------------------------------------------------------------
 
-// void zu::postfix_writer::do_if_node(zu::if_node * const node, int lvl) {
-//   int lbl1;
-//   node->condition()->accept(this, lvl);
-//   _pf.JZ(mklbl(lbl1 = ++_lbl));
-//   node->block()->accept(this, lvl + 2);
-//   _pf.LABEL(mklbl(lbl1));
-// }
-
-//---------------------------------------------------------------------------
-
 void zu::postfix_writer::do_if_else_node(zu::if_else_node * const node, int lvl) {
   int lbl1, lbl2;
   node->condition()->accept(this, lvl);
@@ -248,17 +238,6 @@ void zu::postfix_writer::do_read_node(zu::read_node * const node, int lvl) {
   _pf.PUSH();
   node->argument()->accept(this, lvl);
   _pf.STORE();
-}
-
-//---------------------------------------------------------------------------
-void zu::postfix_writer::do_while_node(zu::while_node * const node, int lvl) {
-  int lbl1, lbl2;
-  _pf.LABEL(mklbl(lbl1 = ++_lbl));
-  node->condition()->accept(this, lvl);
-  _pf.JZ(mklbl(lbl2 = ++_lbl));
-  node->block()->accept(this, lvl + 2);
-  _pf.JMP(mklbl(lbl1));
-  _pf.LABEL(mklbl(lbl2));
 }
 
 //---------------------------------------------------------------------------

@@ -142,21 +142,9 @@ void zu::type_checker::do_read_node(zu::read_node * const node, int lvl) {
 }
 
 //---------------------------------------------------------------------------
-
-void zu::type_checker::do_while_node(zu::while_node * const node, int lvl) {
-  node->condition()->accept(this, lvl + 4);
-}
-
-//---------------------------------------------------------------------------
 void zu::type_checker::do_for_node(zu::for_node * const node, int lvl) {
         //FIXME
 }
-
-//--------------------------------------------------------------------------
-
-// void zu::type_checker::do_if_node(zu::if_node * const node, int lvl) {
-//   node->condition()->accept(this, lvl + 4);
-// }
 
 //---------------------------------------------------------------------------
 void zu::type_checker::do_if_else_node(zu::if_else_node * const node, int lvl) {
@@ -189,5 +177,5 @@ void zu::type_checker::do_return_node(zu::return_node * const node, int lvl) {
 //---------------------------------------------------------------------------
 
 void zu::type_checker::do_index_node(zu::index_node * const node, int lvl) {
-    //FIXER
+    //FIXME
 }

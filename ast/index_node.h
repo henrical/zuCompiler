@@ -15,7 +15,7 @@ namespace zu {
 
   public:
     inline index_node(int lineno, std::string value, cdk::expression_node * lval, cdk::expression_node * rval  ) :
-        zu::lvalue_node(lineno,value), _lval(lval), _rval(rval) { //FIXME
+        zu::lvalue_node(lineno,value), _lval(lval), _rval(rval) {
     }
 
   public:

@@ -88,7 +88,6 @@ public:
   virtual void do_assignment_node(zu::assignment_node * const node, int lvl) = 0;
 
 public:
-  virtual void do_while_node(zu::while_node * const node, int lvl) = 0;
   virtual void do_for_node(zu::for_node * const node, int lvl) = 0;
   // virtual void do_if_node(zu::if_node * const node, int lvl) = 0;
   virtual void do_if_else_node(zu::if_else_node * const node, int lvl) = 0;
