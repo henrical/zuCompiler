@@ -1,67 +1,55 @@
-// $Id: xml_writer.h,v 1.9 2016/03/17 15:57:49 ist173132 Exp $ -*- c++ -*-
-#ifndef __ZU_SEMANTICS_XMLWRITER_H__
-#define __ZU_SEMANTICS_XMLWRITER_H__
+// $Id: postfix_writer.h,v 1.8 2016/03/17 15:57:48 ist173132 Exp $ -*- c++ -*-
+#ifndef __ZU_SEMANTICS_PF_WRITER_H__
+#define __ZU_SEMANTICS_PF_WRITER_H__
 
 #include <string>
 #include <iostream>
-#include <cdk/ast/basic_node.h>
 #include <cdk/symbol_table.h>
+#include <cdk/emitters/basic_postfix_emitter.h>
 #include "targets/basic_ast_visitor.h"
 #include "targets/symbol.h"
 
 namespace zu {
 
-  /**
-   * Print nodes as XML elements to the output stream.
-   */
-  class xml_writer: public basic_ast_visitor {
+  //
+  //! Traverse syntax tree and generate the corresponding assembly code.
+  //!
+  class postfix_writer: public basic_ast_visitor {
     cdk::symbol_table<zu::symbol> &_symtab;
+    cdk::basic_postfix_emitter &_pf;
+    int _lbl;
 
   public:
-    xml_writer(std::shared_ptr<cdk::compiler> compiler, cdk::symbol_table<zu::symbol> &symtab) :
-        basic_ast_visitor(compiler), _symtab(symtab) {
+    postfix_writer(std::shared_ptr<cdk::compiler> compiler, cdk::symbol_table<zu::symbol> &symtab,
+                   cdk::basic_postfix_emitter &pf) :
+        basic_ast_visitor(compiler), _symtab(symtab), _pf(pf), _lbl(0) {
     }
 
   public:
-    ~xml_writer() {
+    ~postfix_writer() {
       os().flush();
     }
 
   private:
-    inline void openTag(const std::string &tag, int lvl) {
-      os() << std::string(lvl, ' ') + "<" + tag + ">" << std::endl;
-    }
-    inline void openTag(const cdk::basic_node *node, int lvl) {
-      openTag(node->name(), lvl);
-    }
-    inline void closeTag(const std::string &tag, int lvl) {
-      os() << std::string(lvl, ' ') + "</" + tag + ">" << std::endl;
-    }
-    inline void closeTag(const cdk::basic_node *node, int lvl) {
-      closeTag(node->name(), lvl);
+    /** Method used to generate sequential labels. */
+    inline std::string mklbl(int lbl) {
+      std::ostringstream oss;
+      if (lbl < 0)
+        oss << ".L" << -lbl;
+      else
+        oss << "_L" << lbl;
+      return oss.str();
     }
 
   public:
     void do_sequence_node(cdk::sequence_node * const node, int lvl);
 
-  protected:
-    template<typename T>
-    void processSimple(cdk::simple_value_node<T> * const node, int lvl) {
-      os() << std::string(lvl, ' ') << "<" << node->name() << ">" << node->value() << "</" << node->name() << ">" << std::endl;
-    }
-
   public:
     void do_integer_node(cdk::integer_node * const node, int lvl);
     void do_string_node(cdk::string_node * const node, int lvl);
 
-  protected:
-    void processUnaryExpression(cdk::unary_expression_node * const node, int lvl);
-
   public:
     void do_neg_node(cdk::neg_node * const node, int lvl);
-
-  protected:
-    void processBinaryExpression(cdk::binary_expression_node * const node, int lvl);
 
   public:
     void do_add_node(cdk::add_node * const node, int lvl);
@@ -97,11 +85,6 @@ namespace zu {
     void do_break_node(zu::break_node * const node, int lvl);
     void do_return_node(zu::return_node * const node, int lvl);
     void do_index_node(zu::index_node * const node, int lvl);
-    void do_and_node(zu::and_node * const node, int lvl);
-    void do_or_node(zu::or_node * const node, int lvl);
-    void do_identity_node(zu::identity_node * const node, int lvl);
-    void do_symmetry_node(zu::symmetry_node * const node, int lvl);
-    void do_variable_node(zu::variable_node * const node, int lvl);
   };
 
 } // zu

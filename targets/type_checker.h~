@@ -1,53 +1,39 @@
-// $Id: xml_writer.h,v 1.9 2016/03/17 15:57:49 ist173132 Exp $ -*- c++ -*-
-#ifndef __ZU_SEMANTICS_XMLWRITER_H__
-#define __ZU_SEMANTICS_XMLWRITER_H__
+// $Id: type_checker.h,v 1.8 2016/03/17 15:57:48 ist173132 Exp $ -*- c++ -*-
+#ifndef __ZU_SEMANTICS_TYPE_CHECKER_H__
+#define __ZU_SEMANTICS_TYPE_CHECKER_H__
 
 #include <string>
 #include <iostream>
-#include <cdk/ast/basic_node.h>
 #include <cdk/symbol_table.h>
-#include "targets/basic_ast_visitor.h"
+#include <cdk/ast/basic_node.h>
 #include "targets/symbol.h"
+#include "targets/basic_ast_visitor.h"
 
 namespace zu {
 
   /**
    * Print nodes as XML elements to the output stream.
    */
-  class xml_writer: public basic_ast_visitor {
+  class type_checker: public basic_ast_visitor {
     cdk::symbol_table<zu::symbol> &_symtab;
 
   public:
-    xml_writer(std::shared_ptr<cdk::compiler> compiler, cdk::symbol_table<zu::symbol> &symtab) :
+    type_checker(std::shared_ptr<cdk::compiler> compiler, cdk::symbol_table<zu::symbol> &symtab) :
         basic_ast_visitor(compiler), _symtab(symtab) {
     }
 
   public:
-    ~xml_writer() {
+    ~type_checker() {
       os().flush();
     }
 
-  private:
-    inline void openTag(const std::string &tag, int lvl) {
-      os() << std::string(lvl, ' ') + "<" + tag + ">" << std::endl;
-    }
-    inline void openTag(const cdk::basic_node *node, int lvl) {
-      openTag(node->name(), lvl);
-    }
-    inline void closeTag(const std::string &tag, int lvl) {
-      os() << std::string(lvl, ' ') + "</" + tag + ">" << std::endl;
-    }
-    inline void closeTag(const cdk::basic_node *node, int lvl) {
-      closeTag(node->name(), lvl);
-    }
-
   public:
-    void do_sequence_node(cdk::sequence_node * const node, int lvl);
+    void do_sequence_node(cdk::sequence_node * const node, int lvl) {
+    }
 
   protected:
     template<typename T>
     void processSimple(cdk::simple_value_node<T> * const node, int lvl) {
-      os() << std::string(lvl, ' ') << "<" << node->name() << ">" << node->value() << "</" << node->name() << ">" << std::endl;
     }
 
   public:
@@ -81,7 +67,8 @@ namespace zu {
     void do_rvalue_node(zu::rvalue_node * const node, int lvl);
 
   public:
-    void do_program_node(zu::program_node * const node, int lvl);
+    void do_program_node(zu::program_node * const node, int lvl) {
+    }
     void do_evaluation_node(zu::evaluation_node * const node, int lvl);
     void do_print_node(zu::print_node * const node, int lvl);
     void do_read_node(zu::read_node * const node, int lvl);
@@ -97,13 +84,23 @@ namespace zu {
     void do_break_node(zu::break_node * const node, int lvl);
     void do_return_node(zu::return_node * const node, int lvl);
     void do_index_node(zu::index_node * const node, int lvl);
-    void do_and_node(zu::and_node * const node, int lvl);
-    void do_or_node(zu::or_node * const node, int lvl);
-    void do_identity_node(zu::identity_node * const node, int lvl);
-    void do_symmetry_node(zu::symmetry_node * const node, int lvl);
-    void do_variable_node(zu::variable_node * const node, int lvl);
-  };
+};
 
 } // zu
+
+//---------------------------------------------------------------------------
+//     HELPER MACRO FOR TYPE CHECKING
+//---------------------------------------------------------------------------
+
+#define CHECK_TYPES(compiler, symtab, node) { \
+  try { \
+    zu::type_checker checker(compiler, symtab); \
+    (node)->accept(&checker, 0); \
+  } \
+  catch (std::string &problem) { \
+    std::cerr << (node)->lineno() << ": FATAL: " << problem << std::endl; \
+    return; \
+  } \
+}
 
 #endif
