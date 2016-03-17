@@ -1,4 +1,4 @@
-// $Id: type_checker.cpp,v 1.9 2016/03/17 22:22:33 ist175838 Exp $ -*- c++ -*-
+// $Id: type_checker.cpp,v 1.10 2016/03/17 22:46:08 ist175838 Exp $ -*- c++ -*-
 #include <string>
 #include "targets/type_checker.h"
 #include "ast/all.h"  // automatically generated
@@ -228,5 +228,10 @@ void zu::type_checker::do_function_definition_node(zu::function_definition_node 
 
 //---------------------------------------------------------------------------
 void zu::type_checker::do_function_call_node(zu::function_call_node * const node, int lvl) {
+    //FIXME
+}
+
+//---------------------------------------------------------------------------
+void zu::type_checker::do_memory_allocation_node(zu::memory_allocation_node * const node, int lvl) {
     //FIXME
 }

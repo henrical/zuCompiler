@@ -1,4 +1,4 @@
-// $Id: postfix_writer.cpp,v 1.10 2016/03/17 22:22:33 ist175838 Exp $ -*- c++ -*-
+// $Id: postfix_writer.cpp,v 1.11 2016/03/17 22:46:08 ist175838 Exp $ -*- c++ -*-
 #include <string>
 #include <sstream>
 #include "targets/type_checker.h"
@@ -281,5 +281,10 @@ void zu::postfix_writer::do_function_definition_node(zu::function_definition_nod
 
 //---------------------------------------------------------------------------
 void zu::postfix_writer::do_function_call_node(zu::function_call_node * const node, int lvl) {
+    //FIXME
+}
+
+//---------------------------------------------------------------------------
+void zu::postfix_writer::do_memory_allocation_node(zu::memory_allocation_node * const node, int lvl) {
     //FIXME
 }

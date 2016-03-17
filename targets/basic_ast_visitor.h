@@ -1,4 +1,4 @@
-// $Id: basic_ast_visitor.h,v 1.9 2016/03/17 22:22:33 ist175838 Exp $ -*- c++ -*-
+// $Id: basic_ast_visitor.h,v 1.10 2016/03/17 22:46:08 ist175838 Exp $ -*- c++ -*-
 #ifndef __ZU_BASIC_AST_VISITOR_H__
 #define __ZU_BASIC_AST_VISITOR_H__
 
@@ -103,6 +103,7 @@ public:
   virtual void do_function_declaration_node(zu::function_declaration_node * const node, int lvl) = 0;
   virtual void do_function_definition_node(zu::function_definition_node * const node, int lvl) = 0;
   virtual void do_function_call_node(zu::function_call_node * const node, int lvl) = 0;
+  virtual void do_memory_allocation_node(zu::memory_allocation_node * const node, int lvl) = 0;
 };
 
 #endif

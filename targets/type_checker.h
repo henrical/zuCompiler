@@ -1,4 +1,4 @@
-// $Id: type_checker.h,v 1.9 2016/03/17 22:22:33 ist175838 Exp $ -*- c++ -*-
+// $Id: type_checker.h,v 1.10 2016/03/17 22:46:08 ist175838 Exp $ -*- c++ -*-
 #ifndef __ZU_SEMANTICS_TYPE_CHECKER_H__
 #define __ZU_SEMANTICS_TYPE_CHECKER_H__
 
@@ -89,6 +89,7 @@ namespace zu {
     void do_function_declaration_node(zu::function_declaration_node * const node, int lvl);
     void do_function_definition_node(zu::function_definition_node * const node, int lvl);
     void do_function_call_node(zu::function_call_node * const node, int lvl);
+    void do_memory_allocation_node(zu::memory_allocation_node * const node, int lvl);
 };
 
 } // zu
