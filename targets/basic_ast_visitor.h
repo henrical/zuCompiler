@@ -96,6 +96,11 @@ public:
   virtual void do_break_node(zu::break_node * const node, int lvl) = 0;
   virtual void do_return_node(zu::return_node * const node, int lvl) = 0;
   virtual void do_index_node(zu::index_node * const node, int lvl) = 0;
+  virtual void do_and_node(zu::and_node * const node, int lvl) = 0;
+  virtual void do_or_node(zu::or_node * const node, int lvl) = 0;
+  virtual void do_identity_node(zu::identity_node * const node, int lvl) = 0;
+  virtual void do_symmetry_node(zu::symmetry_node * const node, int lvl) = 0;
+  virtual void do_variable_node(zu::variable_node * const node, int lvl) = 0;
 };
 
 #endif

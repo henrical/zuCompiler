@@ -190,3 +190,33 @@ void zu::xml_writer::do_return_node(zu::return_node * const node, int lvl) {
 void zu::xml_writer::do_index_node(zu::index_node * const node, int lvl) {
     //FIXME
 }
+
+//------------------------------------------------------------------------------
+
+void zu::xml_writer::do_and_node(zu::and_node * const node, int lvl) {
+    //FIXME
+}
+
+//------------------------------------------------------------------------------
+
+void zu::xml_writer::do_or_node(zu::or_node * const node, int lvl) {
+    //FIXME
+}
+
+//------------------------------------------------------------------------------
+
+void zu::xml_writer::do_identity_node(zu::identity_node * const node, int lvl) {
+    //FIXME
+}
+
+//------------------------------------------------------------------------------
+
+void zu::xml_writer::do_symmetry_node(zu::symmetry_node * const node, int lvl) {
+    //FIXME
+}
+
+//------------------------------------------------------------------------------
+
+void zu::xml_writer::do_variable_node(zu::variable_node * const node, int lvl) {
+    //FIXME
+}
