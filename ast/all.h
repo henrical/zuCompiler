@@ -26,19 +26,21 @@ namespace cdk {
 //---------------------------------------------------------------------------
 
 namespace zu {
-class continue_node; 
-class evaluation_node; 
-class read_node; 
-class print_node; 
-class while_node; 
-class rvalue_node; 
-class program_node; 
+class block_node; 
+class for_node; 
+class return_node; 
 class lvalue_node; 
 class assignment_node; 
+class continue_node; 
+class program_node; 
 class break_node; 
-class for_node; 
-class block_node; 
+class while_node; 
 class if_else_node; 
+class rvalue_node; 
+class read_node; 
+class evaluation_node; 
+class index_node; 
+class print_node; 
 
 } // namespace zu
 
@@ -81,19 +83,21 @@ class if_else_node;
 //     THESE ARE THE NODES DEFINED SPECIFICALLY FOR THIS APPLICATION
 //---------------------------------------------------------------------------
 
-#include "ast/continue_node.h"
-#include "ast/evaluation_node.h"
-#include "ast/read_node.h"
-#include "ast/print_node.h"
-#include "ast/while_node.h"
-#include "ast/rvalue_node.h"
-#include "ast/program_node.h"
+#include "ast/block_node.h"
+#include "ast/for_node.h"
+#include "ast/return_node.h"
 #include "ast/lvalue_node.h"
 #include "ast/assignment_node.h"
+#include "ast/continue_node.h"
+#include "ast/program_node.h"
 #include "ast/break_node.h"
-#include "ast/for_node.h"
-#include "ast/block_node.h"
+#include "ast/while_node.h"
 #include "ast/if_else_node.h"
+#include "ast/rvalue_node.h"
+#include "ast/read_node.h"
+#include "ast/evaluation_node.h"
+#include "ast/index_node.h"
+#include "ast/print_node.h"
 
 
 //---------------------------------------------------------------------------
