@@ -6,3 +6,5 @@ zu
 *.doxyfile
 CVS
 .cvsignore
+*swp
+*~
