@@ -100,6 +100,7 @@ public:
   virtual void do_identity_node(zu::identity_node * const node, int lvl) = 0;
   virtual void do_symmetry_node(zu::symmetry_node * const node, int lvl) = 0;
   virtual void do_variable_node(zu::variable_node * const node, int lvl) = 0;
+  virtual void do_function_declaration_node(zu::function_declaration_node * const node, int lvl) = 0;
 };
 
 #endif
