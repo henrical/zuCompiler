@@ -27,6 +27,7 @@ namespace cdk {
 
 namespace zu {
 class continue_node; 
+class identifier_node; 
 class evaluation_node; 
 class read_node; 
 class print_node; 
@@ -87,6 +88,7 @@ class if_else_node;
 //---------------------------------------------------------------------------
 
 #include "ast/continue_node.h"
+#include "ast/identifier_node.h"
 #include "ast/evaluation_node.h"
 #include "ast/read_node.h"
 #include "ast/print_node.h"

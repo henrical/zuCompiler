@@ -81,6 +81,7 @@ namespace zu {
     void do_block_node(zu::block_node * const node, int lvl);
     void do_break_node(zu::break_node * const node, int lvl);
     void do_return_node(zu::return_node * const node, int lvl);
+    void do_identifier_node(zu::identifier_node * const node, int lvl);
     void do_index_node(zu::index_node * const node, int lvl);
     void do_and_node(zu::and_node * const node, int lvl);
     void do_or_node(zu::or_node * const node, int lvl);

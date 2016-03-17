@@ -231,6 +231,10 @@ void zu::postfix_writer::do_return_node(zu::return_node * const node, int lvl) {
     //FIXME
 }
 
+void zu::postfix_writer::do_identifier_node(zu::identifier_node * const node, int lvl) {
+    //FIXME
+}
+
 void zu::postfix_writer::do_index_node(zu::index_node * const node, int lvl) {
     //FIXME
 }

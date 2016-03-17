@@ -12,7 +12,15 @@ namespace zu {
     cdk::expression_node * _rval;
 
   public:
-    inline index_node(int lineno, std::string value, cdk::expression_node * lval, cdk::expression_node * rval  ) :
+    inline index_node(int lineno, std::string &value, cdk::expression_node * lval, cdk::expression_node * rval  ) :
+        zu::lvalue_node(lineno,value), _lval(lval), _rval(rval) {
+    }
+    
+    inline index_node(int lineno, std::string *value, cdk::expression_node * lval, cdk::expression_node * rval  ) :
+        zu::lvalue_node(lineno,*value), _lval(lval), _rval(rval) {
+    }
+    
+    inline index_node(int lineno, const char *value, cdk::expression_node * lval, cdk::expression_node * rval  ) :
         zu::lvalue_node(lineno,value), _lval(lval), _rval(rval) {
     }
 

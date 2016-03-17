@@ -176,6 +176,12 @@ void zu::type_checker::do_return_node(zu::return_node * const node, int lvl) {
 
 //---------------------------------------------------------------------------
 
+void zu::type_checker::do_identifier_node(zu::identifier_node * const node, int lvl) {
+    //FIXME
+}
+
+//---------------------------------------------------------------------------
+
 void zu::type_checker::do_index_node(zu::index_node * const node, int lvl) {
     //FIXME
 }
