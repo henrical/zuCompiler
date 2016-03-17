@@ -2,8 +2,6 @@
 #ifndef __ZU_RETURNNODE_H__
 #define __ZU_RETURNNODE_H__
 
-#include <cdk/ast/basic_node.h>
-
 namespace zu {
 
   /**

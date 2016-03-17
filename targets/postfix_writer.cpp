@@ -1,4 +1,4 @@
-// $Id: postfix_writer.cpp,v 1.9 2016/03/17 15:57:48 ist173132 Exp $ -*- c++ -*-
+// $Id: postfix_writer.cpp,v 1.10 2016/03/17 22:22:33 ist175838 Exp $ -*- c++ -*-
 #include <string>
 #include <sstream>
 #include "targets/type_checker.h"
@@ -210,59 +210,76 @@ void zu::postfix_writer::do_read_node(zu::read_node * const node, int lvl) {
 }
 
 //---------------------------------------------------------------------------
-
 void zu::postfix_writer::do_for_node(zu::for_node * const node, int lvl) {
     //FIXME
 }
 
+//---------------------------------------------------------------------------
 void zu::postfix_writer::do_continue_node(zu::continue_node * const node, int lvl) {
     //FIXME
 }
 
+//---------------------------------------------------------------------------
 void zu::postfix_writer::do_block_node(zu::block_node * const node, int lvl) {
     //FIXME
 }
 
+//---------------------------------------------------------------------------
 void zu::postfix_writer::do_break_node(zu::break_node * const node, int lvl) {
     //FIXME
 }
 
+//---------------------------------------------------------------------------
 void zu::postfix_writer::do_return_node(zu::return_node * const node, int lvl) {
     //FIXME
 }
 
+//---------------------------------------------------------------------------
 void zu::postfix_writer::do_identifier_node(zu::identifier_node * const node, int lvl) {
     //FIXME
 }
 
+//---------------------------------------------------------------------------
 void zu::postfix_writer::do_index_node(zu::index_node * const node, int lvl) {
     //FIXME
 }
 
+//---------------------------------------------------------------------------
 void zu::postfix_writer::do_and_node(zu::and_node * const node, int lvl) {
     //FIXME
 }
 
+//---------------------------------------------------------------------------
 void zu::postfix_writer::do_or_node(zu::or_node * const node, int lvl) {
     //FIXME
 }
 
+//---------------------------------------------------------------------------
 void zu::postfix_writer::do_identity_node(zu::identity_node * const node, int lvl) {
     //FIXME
 }
 
+//---------------------------------------------------------------------------
 void zu::postfix_writer::do_symmetry_node(zu::symmetry_node * const node, int lvl) {
     //FIXME
 }
 
+//---------------------------------------------------------------------------
 void zu::postfix_writer::do_variable_node(zu::variable_node * const node, int lvl) {
     //FIXME
 }
 
+//---------------------------------------------------------------------------
 void zu::postfix_writer::do_function_declaration_node(zu::function_declaration_node * const node, int lvl) {
     //FIXME
 }
 
+//---------------------------------------------------------------------------
 void zu::postfix_writer::do_function_definition_node(zu::function_definition_node * const node, int lvl) {
+    //FIXME
+}
+
+//---------------------------------------------------------------------------
+void zu::postfix_writer::do_function_call_node(zu::function_call_node * const node, int lvl) {
     //FIXME
 }

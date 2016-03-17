@@ -1,4 +1,4 @@
-// $Id: xml_writer.cpp,v 1.8 2016/03/17 15:57:48 ist173132 Exp $ -*- c++ -*-
+// $Id: xml_writer.cpp,v 1.9 2016/03/17 22:22:33 ist175838 Exp $ -*- c++ -*-
 #include <string>
 #include "targets/xml_writer.h"
 #include "targets/type_checker.h"
@@ -138,7 +138,6 @@ void zu::xml_writer::do_for_node(zu::for_node * const node, int lvl)
 {
         //FIXME
 }
-
 void zu::xml_writer::do_if_else_node(zu::if_else_node * const node, int lvl) {
   openTag(node, lvl);
   openTag("condition", lvl + 2);
@@ -227,5 +226,10 @@ void zu::xml_writer::do_function_declaration_node(zu::function_declaration_node 
 
 //---------------------------------------------------------------------------
 void zu::xml_writer::do_function_definition_node(zu::function_definition_node * const node, int lvl) {
+    //FIXME
+}
+
+//---------------------------------------------------------------------------
+void zu::xml_writer::do_function_call_node(zu::function_call_node * const node, int lvl) {
     //FIXME
 }
