@@ -11,10 +11,8 @@ namespace zu {
 
   public:
     inline and_node(int lineno, cdk::expression_node * left,  cdk::expression_node * right ) :
-        cdk::binary_expression_node(lineno, left, right){
+        cdk::binary_expression_node(lineno, left, right)
     }
-
-  public:
 
     void accept(basic_ast_visitor *sp, int level) {
       sp->do_and_node(this, level);

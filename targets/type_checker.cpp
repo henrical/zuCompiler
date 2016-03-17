@@ -212,7 +212,7 @@ void zu::type_checker::do_identity_node(zu::identity_node * const node, int lvl)
 
 //---------------------------------------------------------------------------
 
-void zu::type_checker::do_simmetry_node(zu::simmetry_node * const node, int lvl) {
+void zu::type_checker::do_symmetry_node(zu::symmetry_node * const node, int lvl) {
     //FIXER
 }
 

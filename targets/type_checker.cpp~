@@ -203,3 +203,21 @@ void zu::type_checker::do_and_node(zu::and_node * const node, int lvl) {
 void zu::type_checker::do_or_node(zu::or_node * const node, int lvl) {
     //FIXER
 }
+
+//---------------------------------------------------------------------------
+
+void zu::type_checker::do_identity_node(zu::identity_node * const node, int lvl) {
+    //FIXER
+}
+
+//---------------------------------------------------------------------------
+
+void zu::type_checker::do_simmetry_node(zu::simmetry_node * const node, int lvl) {
+    //FIXER
+}
+
+//---------------------------------------------------------------------------
+
+void zu::type_checker::do_variable_node(zu::variable_node * const node, int lvl) {
+    //FIXER
+}

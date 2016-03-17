@@ -299,10 +299,10 @@ void zu::postfix_writer::do_identity_node(zu::identity_node * const node, int lv
     //FIXME
 }
 
-void zu::postfix_writer::do_symmetry_node(zu::simmetry_node * const node, int lvl) {
+void zu::postfix_writer::do_symmetry_node(zu::symmetry_node * const node, int lvl) {
     //FIXME
 }
 
-void zu::postfix_variable::do_index_node(zu::variable_node * const node, int lvl) {
+void zu::postfix_writer::do_variable_node(zu::variable_node * const node, int lvl) {
     //FIXME
 }
