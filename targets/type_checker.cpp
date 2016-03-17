@@ -183,29 +183,29 @@ void zu::type_checker::do_index_node(zu::index_node * const node, int lvl) {
 //---------------------------------------------------------------------------
 
 void zu::type_checker::do_and_node(zu::and_node * const node, int lvl) {
-    //FIXER
+    //FIXME
 }
 
 //---------------------------------------------------------------------------
 
 void zu::type_checker::do_or_node(zu::or_node * const node, int lvl) {
-    //FIXER
+    //FIXME
 }
 
 //---------------------------------------------------------------------------
 
 void zu::type_checker::do_identity_node(zu::identity_node * const node, int lvl) {
-    //FIXER
+    //FIXME
 }
 
 //---------------------------------------------------------------------------
 
 void zu::type_checker::do_symmetry_node(zu::symmetry_node * const node, int lvl) {
-    //FIXER
+    //FIXME
 }
 
 //---------------------------------------------------------------------------
 
 void zu::type_checker::do_variable_node(zu::variable_node * const node, int lvl) {
-    //FIXER
+    //FIXME
 }

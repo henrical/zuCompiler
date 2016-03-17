@@ -37,7 +37,6 @@ class variable_node;
 class or_node; 
 class identity_node; 
 class rvalue_node; 
-class program_node; 
 class lvalue_node; 
 class assignment_node; 
 class break_node; 
@@ -98,7 +97,6 @@ class if_else_node;
 #include "ast/or_node.h"
 #include "ast/identity_node.h"
 #include "ast/rvalue_node.h"
-#include "ast/program_node.h"
 #include "ast/lvalue_node.h"
 #include "ast/assignment_node.h"
 #include "ast/break_node.h"

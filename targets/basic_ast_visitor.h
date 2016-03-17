@@ -81,7 +81,6 @@ public:
   virtual void do_rvalue_node(zu::rvalue_node * const node, int lvl) = 0;
 
 public:
-  virtual void do_program_node(zu::program_node * const node, int lvl) = 0;
   virtual void do_evaluation_node(zu::evaluation_node * const node, int lvl) = 0;
   virtual void do_print_node(zu::print_node * const node, int lvl) = 0;
   virtual void do_read_node(zu::read_node * const node, int lvl) = 0;
@@ -89,7 +88,6 @@ public:
 
 public:
   virtual void do_for_node(zu::for_node * const node, int lvl) = 0;
-  // virtual void do_if_node(zu::if_node * const node, int lvl) = 0;
   virtual void do_if_else_node(zu::if_else_node * const node, int lvl) = 0;
   virtual void do_continue_node(zu::continue_node * const node, int lvl) = 0;
   virtual void do_block_node(zu::block_node * const node, int lvl) = 0;
