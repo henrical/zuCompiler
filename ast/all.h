@@ -38,6 +38,7 @@ class index_node;
 class variable_node; 
 class or_node; 
 class identity_node; 
+class declare_var_node; 
 class function_call_node; 
 class rvalue_node; 
 class memory_address_node; 
@@ -104,6 +105,7 @@ class if_else_node;
 #include "ast/variable_node.h"
 #include "ast/or_node.h"
 #include "ast/identity_node.h"
+#include "ast/declare_var_node.h"
 #include "ast/function_call_node.h"
 #include "ast/rvalue_node.h"
 #include "ast/memory_address_node.h"

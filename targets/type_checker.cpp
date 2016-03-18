@@ -217,6 +217,12 @@ void zu::type_checker::do_variable_node(zu::variable_node * const node, int lvl)
 }
 
 //---------------------------------------------------------------------------
+void zu::type_checker::do_declare_var_node(zu::declare_var_node * const node, int lvl)
+{
+    //FIXME
+}
+
+//---------------------------------------------------------------------------
 
 void zu::type_checker::do_function_declaration_node(zu::function_declaration_node * const node, int lvl) {
     //FIXME
