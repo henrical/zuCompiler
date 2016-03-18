@@ -104,6 +104,7 @@ public:
   virtual void do_function_definition_node(zu::function_definition_node * const node, int lvl) = 0;
   virtual void do_function_call_node(zu::function_call_node * const node, int lvl) = 0;
   virtual void do_memory_allocation_node(zu::memory_allocation_node * const node, int lvl) = 0;
+  virtual void do_memory_address_node(zu::memory_address_node * const node, int lvl) = 0;
 };
 
 #endif

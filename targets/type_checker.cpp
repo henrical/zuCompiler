@@ -235,3 +235,9 @@ void zu::type_checker::do_function_call_node(zu::function_call_node * const node
 void zu::type_checker::do_memory_allocation_node(zu::memory_allocation_node * const node, int lvl) {
     //FIXME
 }
+
+//---------------------------------------------------------------------------
+void zu::type_checker::do_memory_address_node(zu::memory_address_node * const node, int lvl)
+{
+    //FIXME
+}
