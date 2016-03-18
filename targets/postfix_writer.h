@@ -1,4 +1,4 @@
-// $Id: postfix_writer.h,v 1.10 2016/03/17 22:46:08 ist175838 Exp $ -*- c++ -*-
+// $Id: postfix_writer.h,v 1.12 2016/03/18 12:35:47 ist175838 Exp $ -*- c++ -*-
 #ifndef __ZU_SEMANTICS_PF_WRITER_H__
 #define __ZU_SEMANTICS_PF_WRITER_H__
 
