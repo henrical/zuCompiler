@@ -1,4 +1,4 @@
-// $Id: type_checker.h,v 1.12 2016/03/18 12:35:48 ist175838 Exp $ -*- c++ -*-
+// $Id: type_checker.h,v 1.13 2016/03/18 12:59:55 ist175838 Exp $ -*- c++ -*-
 #ifndef __ZU_SEMANTICS_TYPE_CHECKER_H__
 #define __ZU_SEMANTICS_TYPE_CHECKER_H__
 
