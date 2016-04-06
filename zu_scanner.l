@@ -11,40 +11,58 @@
 
 // don't change this
 #define yyerror LexerError
+
 %}
-%x X_STRING
+/* Um unico caracter hexadecimal, alfabetico e alfanumerico  */
+HEXNUM                      [a-fA-F0-9]
+ALPHA                       [a-zA-Z]
+ALPHANUM                    [0-9a-zA-z]
+
+WHITESPACE                  [\s\t\n]+
+IDENTIFIER                  [A-Za-z][A-Za-z0-9_]*
+
+/* Usado para identificar o inicio de uma string  */
+STRING_DELIMITER            \"
+
+
+
+/* Um backslash (\)  */
+BACKSLASH                   \\
+
+/* Quando aparece numa string, a string termina nesse ponto.  */
+ASCII_NULL                  \\0
+
+
+
+%x X_STRING X_STRING_SPECIAL
 %%
 
-"--".*                 ; /* ignore comments */
+"--".*                                  ; /* ignore comments */
 
-">="                   return tGE; 
-"<="                   return tLE; 
-"=="                   return tEQ; 
-"!="                   return tNE; 
+">="                                    return tGE; 
+"<="                                    return tLE; 
+"=="                                    return tEQ; 
+"!="                                    return tNE; 
 
-"while"                return tWHILE; 
-"if"                   return tIF; 
-"else"                 return tELSE; 
-"print"                return tPRINT; 
-"read"                 return tREAD; 
-"begin"                return tBEGIN; 
-"end"                  return tEND; 
+[A-Za-z][A-Za-z0-9_]*                   yylval.s = new std::string(yytext); return tIDENTIFIER;
 
-[A-Za-z][A-Za-z0-9_]*  yylval.s = new std::string(yytext); return tIDENTIFIER;
 
-\'                     yy_push_state(X_STRING); yylval.s = new std::string("");
-<X_STRING>\'           yy_pop_state(); return tSTRING;
-<X_STRING>\\\'         *yylval.s += yytext + 1;
-<X_STRING>.            *yylval.s += yytext;
-<X_STRING>\n           yyerror("newline in string");
+{STRING_DELIMITER}                      yy_push_state(X_STRING); yylval.s = new std::string("");
+<X_STRING>{STRING_DELIMITER}            yy_pop_state(); return tSTRING;
+<X_STRING>{BACKSLASH}                   yy_push_state(X_STRING_SPECIAL);
+<X_STRING>.                             *yylval.s += yytext;
 
-[0-9]+                 yylval.i = strtol(yytext, nullptr, 10); return tINTEGER;
+<X_STRING_SPECIAL>n                     yy_pop_state(); *yylval.s += std::string(1, 10);
+<X_STRING_SPECIAL>t                     yy_pop_state(); *yylval.s += std::string(1, 9);
+<X_STRING_SPECIAL>r                     yy_pop_state(); *yylval.s += std::string(1, 13);
 
-[-()<>=+*/%;{}.]       return *yytext;
+[0-9]+                                  yylval.i = strtol(yytext, nullptr, 10); return tINTEGER;
 
-[ \t\n]+               ; /* ignore whitespace */
+[-()<>=+*/%;{}.]                        return *yytext;
 
-.                      yyerror("Unknown character");
+{WHITESPACE}                            ; /* ignore whitespace */
+
+.                                       yyerror("Unknown character");
 
 %%
 // Very, very dirty hack: flex is a mess generating C++ scanners.
