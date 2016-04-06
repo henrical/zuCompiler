@@ -138,7 +138,6 @@ void zu::type_checker::do_print_node(zu::print_node * const node, int lvl) {
 //---------------------------------------------------------------------------
 
 void zu::type_checker::do_read_node(zu::read_node * const node, int lvl) {
-  node->argument()->accept(this, lvl + 2);
 }
 
 //---------------------------------------------------------------------------

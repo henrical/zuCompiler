@@ -205,7 +205,6 @@ void zu::postfix_writer::do_read_node(zu::read_node * const node, int lvl) {
   CHECK_TYPES(_compiler, _symtab, node);
   _pf.CALL("readi");
   _pf.PUSH();
-  node->argument()->accept(this, lvl);
   _pf.STORE();
 }
 

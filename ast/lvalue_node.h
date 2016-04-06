@@ -11,6 +11,7 @@ namespace zu {
    * Class for describing syntactic tree leaves for holding lvalues.
    */
   class lvalue_node: public cdk::simple_value_node<std::string> {
+  
   public:
     inline lvalue_node(int lineno, const char *s) :
         cdk::simple_value_node<std::string>(lineno, s) {

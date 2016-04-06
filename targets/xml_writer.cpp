@@ -128,7 +128,6 @@ void zu::xml_writer::do_print_node(zu::print_node * const node, int lvl) {
 
 void zu::xml_writer::do_read_node(zu::read_node * const node, int lvl) {
   openTag(node, lvl);
-  node->argument()->accept(this, lvl + 2);
   closeTag(node, lvl);
 }
 

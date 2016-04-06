@@ -14,11 +14,11 @@ namespace zu {
   class function_definition_node: public cdk::basic_node {
     function_declaration_node *_declaration;
     block_node *_block;                             //declaration nd instruction _block
-    return_node *_returnValue;
+    cdk::expression_node *_returnValue;
     
       
   public:
-    inline function_definition_node(int lineno, function_declaration_node *declaration, block_node *block, return_node *return_value) :
+    inline function_definition_node(int lineno, function_declaration_node *declaration, block_node *block, cdk::expression_node *return_value) :
         cdk::basic_node(lineno), _declaration(declaration), _block(block), _returnValue(return_value)
     {
     }
@@ -34,7 +34,7 @@ namespace zu {
             return _block;
     }
     
-    inline return_node* returnValue()
+    inline cdk::expression_node* returnValue()
     {
             return _returnValue;
     }

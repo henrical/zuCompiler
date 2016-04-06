@@ -16,9 +16,8 @@ class declare_var_node: public zu::variable_node  {
    bool _isConst;
 
   public:
-    inline declare_var_node(int lineno, basic_type * type, std::string * identifier, bool global, bool local, bool import, bool func_arg, bool isConst
-                           ) :
-      zu::variable_node(lineno,identifier,global)
+    inline declare_var_node(int lineno, basic_type * type, std::string * identifier, bool local, bool import, bool func_arg, bool isConst) :
+      zu::variable_node(lineno,identifier)
         ,_local(local),_import(import),_func_arg(func_arg),_isConst(isConst) {
 	_type=type;
   }

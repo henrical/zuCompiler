@@ -10,18 +10,13 @@
 namespace zu {
 
     class variable_node: public zu::lvalue_node {
-      bool _global;
 
     public:
-        inline variable_node(int lineno, std::string * identifier, bool global = false) :
-	lvalue_node(lineno,identifier), _global(global)
+        inline variable_node(int lineno, std::string * identifier) :
+	lvalue_node(lineno,identifier)
         { }
 
     public:
-    inline bool isGlobal(){
-      return _global;
-    }
-    
     void accept(basic_ast_visitor *sp, int level) {
       sp->do_variable_node(this, level);
     }
