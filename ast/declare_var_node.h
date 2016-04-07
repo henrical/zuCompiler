@@ -1,4 +1,4 @@
-// $Id: declare_var_node.h,v 1.1 2016/03/18 12:59:55 ist175838 Exp $ -*- c++ -*-
+// $Id: declare_var_node.h,v 1.2 2016/04/06 16:20:27 ist175838 Exp $ -*- c++ -*-
 #ifndef __ZU_DECLAREVARNODE_H__
 #define __ZU_DECLAREVARDNODE_H__
 

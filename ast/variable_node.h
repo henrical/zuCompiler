@@ -1,4 +1,4 @@
-// $Id: variable_node.h,v 1.2 2016/03/18 12:59:55 ist175838 Exp $ -*- c++ -*-
+// $Id: variable_node.h,v 1.3 2016/04/06 16:20:27 ist175838 Exp $ -*- c++ -*-
 #ifndef __ZU_VARIABLENODE_H__
 #define __ZU_VARIABLENODE_H__
 
