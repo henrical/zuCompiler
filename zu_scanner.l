@@ -19,9 +19,24 @@ void print(std::string msg, int lineno)
     std::cout << "Line " << lineno << ": " << msg << std::endl;
 }
 
+void printLexeme(int lexeme, int lineno)
+{
+    std::cout << "::: Read lexeme [" << lexeme << "] at line " <<lineno << std::endl;
+}
+
+void printLexeme(std::string token, int lexeme, int lineno)
+{
+    std::cout << "::: Read token \"" << token << "\", lexeme [" << lexeme << "] at line " <<lineno << std::endl;
+}
+
 void printLexeme(std::string lexeme, int lineno)
 {
     std::cout << "::: Read lexeme [" << lexeme << "] at line " <<lineno << std::endl;
+}
+
+void printLexeme(std::string token, std::string lexeme, int lineno)
+{
+    std::cout << "::: Read token \"" << token << "\", lexeme [" << lexeme << "] at line " <<lineno << std::endl;
 }
 
 //Converte hexadecimal para decimal
@@ -50,7 +65,7 @@ ALPHANUM                    [0-9a-zA-z]
 WHITESPACE                  [ \t\n]+
 IDENTIFIER                  [A-Za-z][A-Za-z0-9_]*
 
-/* Usado para identificar o inicio de uma string  */
+/* Usado para identificar o inicio ou fim de uma string  */
 STRING_LIM                  \"
 
 /* Um backslash (\)  */
@@ -72,17 +87,17 @@ COMMENT                     \/\*((\*+[^/*])|([^*]))*\**\*\/
 {LINE_COMMENT}                                  ; print("skipping line comment", yylineno);
 {COMMENT}                                       ; print("skipping multi-line comment", yylineno);
 
-">="                                            return tGE; 
-"<="                                            return tLE; 
-"=="                                            return tEQ; 
-"!="                                            return tNE; 
+">="                                            printLexeme(yytext, yylineno); return tGE; 
+"<="                                            printLexeme(yytext, yylineno);return tLE; 
+"=="                                            printLexeme(yytext, yylineno);return tEQ; 
+"!="                                            printLexeme(yytext, yylineno);return tNE; 
 
-[A-Za-z][A-Za-z0-9_]*                           yylval.s = new std::string(yytext); printLexeme(*yylval.s, yylineno); return tIDENTIFIER;
+[A-Za-z][A-Za-z0-9_]*                           yylval.s = new std::string(yytext); printLexeme("identifier", *yylval.s, yylineno); return tIDENTIFIER;
 
 
 {STRING_LIM}                                    yy_push_state(X_STRING); yylval.s = new std::string("");
 <X_STRING>{STRING_LIM}{WHITESPACE}{STRING_LIM}  ;
-<X_STRING>{STRING_LIM}                          yy_pop_state(); printLexeme(*yylval.s, yylineno); return tSTRING;
+<X_STRING>{STRING_LIM}                          yy_pop_state(); printLexeme("string", *yylval.s, yylineno); return tSTRING;
 <X_STRING>{BACKSLASH}                           yy_push_state(X_STRING_SPECIAL);
 <X_STRING>.                                     *yylval.s += yytext;
 
@@ -94,7 +109,7 @@ COMMENT                     \/\*((\*+[^/*])|([^*]))*\**\*\/
 <X_STRING_SPECIAL>{HEXNUM}{HEXNUM}              yy_pop_state(); *yylval.s += std::string(1, hex2dec(yytext)); //hex2dec converte hexadecimal para decimal
 <X_STRING_SPECIAL>{HEXNUM}                      yy_pop_state(); *yylval.s += std::string(1, hex2dec(yytext));
 
-[0-9]+                                          yylval.i = strtol(yytext, nullptr, 10); return tINTEGER;
+[0-9]+                                          yylval.i = strtol(yytext, nullptr, 10); printLexeme("integer", yylval.i, yylineno); return tINTEGER;
 
 [-()<>=+*/%;{}.]                                return *yytext;
 

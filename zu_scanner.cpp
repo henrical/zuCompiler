@@ -504,9 +504,24 @@ void print(std::string msg, int lineno)
     std::cout << "Line " << lineno << ": " << msg << std::endl;
 }
 
+void printLexeme(int lexeme, int lineno)
+{
+    std::cout << "::: Read lexeme [" << lexeme << "] at line " <<lineno << std::endl;
+}
+
+void printLexeme(std::string token, int lexeme, int lineno)
+{
+    std::cout << "::: Read token \"" << token << "\", lexeme [" << lexeme << "] at line " <<lineno << std::endl;
+}
+
 void printLexeme(std::string lexeme, int lineno)
 {
     std::cout << "::: Read lexeme [" << lexeme << "] at line " <<lineno << std::endl;
+}
+
+void printLexeme(std::string token, std::string lexeme, int lineno)
+{
+    std::cout << "::: Read token \"" << token << "\", lexeme [" << lexeme << "] at line " <<lineno << std::endl;
 }
 
 //Converte hexadecimal para decimal
@@ -527,14 +542,14 @@ int hex2dec(std::string hex)
 }
 
 /* Um unico caracter hexadecimal, alfabetico e alfanumerico  */
-/* Usado para identificar o inicio de uma string  */
+/* Usado para identificar o inicio ou fim de uma string  */
 /* Um backslash (\)  */
 /* Quando aparece numa string, a string termina nesse ponto.  */
 /* X_STRING - estamos dentro de uma string (" ") .
    X_STRING_SPECIAL - encontramos um \ e estamos a ler um caracter especial dentro de uma string (\n, \12, \").
 */
  
-#line 538 "zu_scanner.cpp"
+#line 553 "zu_scanner.cpp"
 
 #define INITIAL 0
 #define X_STRING 1
@@ -668,10 +683,10 @@ YY_DECL
 		}
 
 	{
-#line 70 "zu_scanner.l"
+#line 85 "zu_scanner.l"
 
 
-#line 675 "zu_scanner.cpp"
+#line 690 "zu_scanner.cpp"
 
 	while ( 1 )		/* loops until end-of-file is reached */
 		{
@@ -740,128 +755,128 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 72 "zu_scanner.l"
+#line 87 "zu_scanner.l"
 ; print("skipping line comment", yylineno);
 	YY_BREAK
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 73 "zu_scanner.l"
+#line 88 "zu_scanner.l"
 ; print("skipping multi-line comment", yylineno);
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 75 "zu_scanner.l"
-return tGE; 
+#line 90 "zu_scanner.l"
+printLexeme(yytext, yylineno); return tGE; 
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 76 "zu_scanner.l"
-return tLE; 
+#line 91 "zu_scanner.l"
+printLexeme(yytext, yylineno);return tLE; 
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 77 "zu_scanner.l"
-return tEQ; 
+#line 92 "zu_scanner.l"
+printLexeme(yytext, yylineno);return tEQ; 
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 78 "zu_scanner.l"
-return tNE; 
+#line 93 "zu_scanner.l"
+printLexeme(yytext, yylineno);return tNE; 
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 80 "zu_scanner.l"
-yylval.s = new std::string(yytext); printLexeme(*yylval.s, yylineno); return tIDENTIFIER;
+#line 95 "zu_scanner.l"
+yylval.s = new std::string(yytext); printLexeme("identifier", *yylval.s, yylineno); return tIDENTIFIER;
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 83 "zu_scanner.l"
+#line 98 "zu_scanner.l"
 yy_push_state(X_STRING); yylval.s = new std::string("");
 	YY_BREAK
 case 9:
 /* rule 9 can match eol */
 YY_RULE_SETUP
-#line 84 "zu_scanner.l"
+#line 99 "zu_scanner.l"
 ;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 85 "zu_scanner.l"
-yy_pop_state(); printLexeme(*yylval.s, yylineno); return tSTRING;
+#line 100 "zu_scanner.l"
+yy_pop_state(); printLexeme("string", *yylval.s, yylineno); return tSTRING;
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 86 "zu_scanner.l"
+#line 101 "zu_scanner.l"
 yy_push_state(X_STRING_SPECIAL);
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 87 "zu_scanner.l"
+#line 102 "zu_scanner.l"
 *yylval.s += yytext;
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 89 "zu_scanner.l"
+#line 104 "zu_scanner.l"
 yy_pop_state(); *yylval.s += std::string(1, 10);/* 10 e o cod. ascii do \n */
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 90 "zu_scanner.l"
+#line 105 "zu_scanner.l"
 yy_pop_state(); *yylval.s += std::string(1, 9);/* 9 e o cod. ascii do \t */
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 91 "zu_scanner.l"
+#line 106 "zu_scanner.l"
 yy_pop_state(); *yylval.s += std::string(1, 13);/* 13 e o cod. ascii do \r */
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 92 "zu_scanner.l"
+#line 107 "zu_scanner.l"
 yy_pop_state(); *yylval.s += std::string(1, 34);/* 34 e o cod. ascii da aspa */
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 93 "zu_scanner.l"
+#line 108 "zu_scanner.l"
 yy_pop_state(); *yylval.s += std::string(1, 92);/* 92 e o cod. ascii do backslash */
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 94 "zu_scanner.l"
+#line 109 "zu_scanner.l"
 yy_pop_state(); *yylval.s += std::string(1, hex2dec(yytext)); //hex2dec converte hexadecimal para decimal
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 95 "zu_scanner.l"
+#line 110 "zu_scanner.l"
 yy_pop_state(); *yylval.s += std::string(1, hex2dec(yytext));
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 97 "zu_scanner.l"
-yylval.i = strtol(yytext, nullptr, 10); return tINTEGER;
+#line 112 "zu_scanner.l"
+yylval.i = strtol(yytext, nullptr, 10); printLexeme("integer", yylval.i, yylineno); return tINTEGER;
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 99 "zu_scanner.l"
+#line 114 "zu_scanner.l"
 return *yytext;
 	YY_BREAK
 case 22:
 /* rule 22 can match eol */
 YY_RULE_SETUP
-#line 101 "zu_scanner.l"
+#line 116 "zu_scanner.l"
 ; /* ignore whitespace */
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 103 "zu_scanner.l"
+#line 118 "zu_scanner.l"
 yyerror("Unknown character");
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 105 "zu_scanner.l"
+#line 120 "zu_scanner.l"
 ECHO;
 	YY_BREAK
-#line 865 "zu_scanner.cpp"
+#line 880 "zu_scanner.cpp"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(X_STRING):
 case YY_STATE_EOF(X_STRING_SPECIAL):
@@ -1771,7 +1786,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 104 "zu_scanner.l"
+#line 119 "zu_scanner.l"
 
 
 // Very, very dirty hack: flex is a mess generating C++ scanners.
