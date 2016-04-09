@@ -1,7 +1,7 @@
 %option c++ yyclass="zu_scanner" outfile="zu_scanner.cpp"
 %option stack noyywrap yylineno 8bit
 %{ 
-/* $Id: zu_scanner.l,v 1.2 2016/04/06 16:20:26 ist175838 Exp $ */
+/* $Id: zu_scanner.l,v 1.3 2016/04/07 13:34:32 ist175838 Exp $ */
 // make relevant includes before including the parser's tab file
 #include <string>
 #include "math.h"
@@ -14,9 +14,17 @@
 // don't change this
 #define yyerror LexerError
 
+//Estas funçoes servem para debug.
+//Token e o tipo do que foi lido, lexema e o que foi lido
+// "texto" -> token=string, lexema=texto
 void print(std::string msg, int lineno)
 {
     std::cout << "Line " << lineno << ": " << msg << std::endl;
+}
+
+void print(std::string msg)
+{
+    std::cout << msg << std::endl;
 }
 
 void printLexeme(int lexeme, int lineno)
@@ -63,6 +71,9 @@ ALPHA                       [a-zA-Z]
 ALPHANUM                    [0-9a-zA-z]
 
 WHITESPACE                  [ \t\n]+
+/* whitespace opcional (pode estar ou nao estar) */
+OPT_WHITESPACE              [ \t\n]*
+
 IDENTIFIER                  [A-Za-z][A-Za-z0-9_]*
 
 /* Usado para identificar o inicio ou fim de uma string  */
@@ -77,17 +88,20 @@ ASCII_NULL                  \\0
 LINE_COMMENT                \/\/.*
 COMMENT                     \/\*((\*+[^/*])|([^*]))*\**\*\/
 
+/* ========================================== */
+FUNCTION_DEFINITION         \#{IDENTIFIER}{WHITESPACE}\(\){WHITESPACE}\{.*\}
 
-/* X_STRING - estamos dentro de uma string (" ") .
-   X_STRING_SPECIAL - encontramos um \ e estamos a ler um caracter especial dentro de uma string (\n, \12, \").
+/* X_STRING: estado para quando entramos numa string.
+   X_EOF_STRING: estado para quando estamos numa string e encontramos '\0'. Dai ate ao final da string ignora-se os caracteres.
+   X_STRING_SPECIAL: estado para quando estamos numa string e encontramos '\', que e o inicio de uma caracter especial.
 */
-%x X_STRING X_STRING_SPECIAL 
+%x X_STRING X_STRING_SPECIAL X_EOF_STRING
 %%
 
 {LINE_COMMENT}                                  ; print("skipping line comment", yylineno);
 {COMMENT}                                       ; print("skipping multi-line comment", yylineno);
 
-">="                                            printLexeme(yytext, yylineno); return tGE; 
+">="                                            printLexeme(yytext, yylineno);return tGE; 
 "<="                                            printLexeme(yytext, yylineno);return tLE; 
 "=="                                            printLexeme(yytext, yylineno);return tEQ; 
 "!="                                            printLexeme(yytext, yylineno);return tNE; 
@@ -95,11 +109,22 @@ COMMENT                     \/\*((\*+[^/*])|([^*]))*\**\*\/
 [A-Za-z][A-Za-z0-9_]*                           yylval.s = new std::string(yytext); printLexeme("identifier", *yylval.s, yylineno); return tIDENTIFIER;
 
 
-{STRING_LIM}                                    yy_push_state(X_STRING); yylval.s = new std::string("");
-<X_STRING>{STRING_LIM}{WHITESPACE}{STRING_LIM}  ;
-<X_STRING>{STRING_LIM}                          yy_pop_state(); printLexeme("string", *yylval.s, yylineno); return tSTRING;
-<X_STRING>{BACKSLASH}                           yy_push_state(X_STRING_SPECIAL);
-<X_STRING>.                                     *yylval.s += yytext;
+{STRING_LIM}                                        yy_push_state(X_STRING); yylval.s = new std::string("");
+<X_STRING>{STRING_LIM}{OPT_WHITESPACE}{STRING_LIM}      ;
+<X_STRING>{STRING_LIM}{OPT_WHITESPACE}{COMMENT}{OPT_WHITESPACE}{STRING_LIM}   ;/* esta regra serve para ignorar comentarios entre strings */  
+<X_STRING>{STRING_LIM}                              yy_pop_state(); printLexeme("string", *yylval.s, yylineno); return tSTRING;
+
+<X_STRING>{BACKSLASH}0                              yy_push_state(X_EOF_STRING); /* encontrar '\0' faz ignorar o resto da string */
+
+<X_STRING>{BACKSLASH}                               yy_push_state(X_STRING_SPECIAL); /* encontrar '\' faz ir para estado de caracter especial */
+
+<X_STRING>.                                         *yylval.s += yytext;
+<X_STRING>\n                                        yyerror("Error: Newline inside string.");
+
+<X_EOF_STRING>{STRING_LIM}                      { yyless(yyleng - 1); /*isto devolve uma aspa ao input para o estado X_STRING ler*/
+                                                  yy_pop_state(); }
+<X_EOF_STRING>.                                 ; /* caracteres depois de '\0' sao ignorados */
+
 
 <X_STRING_SPECIAL>n                             yy_pop_state(); *yylval.s += std::string(1, 10);/* 10 e o cod. ascii do \n */
 <X_STRING_SPECIAL>t                             yy_pop_state(); *yylval.s += std::string(1, 9);/* 9 e o cod. ascii do \t */
@@ -110,6 +135,8 @@ COMMENT                     \/\*((\*+[^/*])|([^*]))*\**\*\/
 <X_STRING_SPECIAL>{HEXNUM}                      yy_pop_state(); *yylval.s += std::string(1, hex2dec(yytext));
 
 [0-9]+                                          yylval.i = strtol(yytext, nullptr, 10); printLexeme("integer", yylval.i, yylineno); return tINTEGER;
+
+{FUNCTION_DEFINITION}                           ;
 
 [-()<>=+*/%;{}.]                                return *yytext;
 
