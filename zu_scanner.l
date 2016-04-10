@@ -37,6 +37,11 @@ void printLexeme(std::string token, int lexeme, int lineno)
     std::cout << "::: Read token \"" << token << "\", lexeme [" << lexeme << "] at line " <<lineno << std::endl;
 }
 
+void printLexeme(std::string token, float lexeme, int lineno)
+{
+    std::cout << "::: Read token \"" << token << "\", lexeme [" << lexeme << "] at line " <<lineno << std::endl;
+}
+
 void printLexeme(std::string lexeme, int lineno)
 {
     std::cout << "::: Read lexeme [" << lexeme << "] at line " <<lineno << std::endl;
@@ -65,6 +70,7 @@ int hex2dec(std::string hex)
 }
 
 %}
+/*[-()<>=+*%/;{}.]*/ 
 /* Um unico caracter hexadecimal, alfabetico e alfanumerico  */
 HEXNUM                      [a-fA-F0-9]
 ALPHA                       [a-zA-Z]
@@ -105,9 +111,9 @@ COMMENT                     \/\*((\*+[^/*])|([^*]))*\**\*\/
 "=="                                            printLexeme(yytext, yylineno);return tEQ; 
 "!="                                            printLexeme(yytext, yylineno);return tNE; 
 
-#                                               return tINTEGER;
-\$                                              return tSTRING;
-%                                               return tFLOAT;
+"#"                                             printLexeme("integer", "#", yylineno); return tINTEGER; 
+"$"                                             printLexeme("string", "$", yylineno); return tSTRING; 
+"%"                                             printLexeme("float", "%", yylineno);  return tFLOAT; 
 
 [A-Za-z][A-Za-z0-9_]*                           yylval.s = new std::string(yytext); printLexeme("identifier", *yylval.s, yylineno); return tIDENTIFIER;
 
@@ -115,7 +121,7 @@ COMMENT                     \/\*((\*+[^/*])|([^*]))*\**\*\/
 {STRING_LIM}                                        yy_push_state(X_STRING); yylval.s = new std::string("");
 <X_STRING>{STRING_LIM}{OPT_WHITESPACE}{STRING_LIM}      ;
 <X_STRING>{STRING_LIM}{OPT_WHITESPACE}{COMMENT}{OPT_WHITESPACE}{STRING_LIM}   ;/* esta regra serve para ignorar comentarios entre strings */  
-<X_STRING>{STRING_LIM}                              yy_pop_state(); printLexeme("string", *yylval.s, yylineno); return tSTRING;
+<X_STRING>{STRING_LIM}                              yy_pop_state(); printLexeme("l_string", *yylval.s, yylineno); return tLSTRING;
 
 <X_STRING>{BACKSLASH}0                              yy_push_state(X_EOF_STRING); /* encontrar '\0' faz ignorar o resto da string */
 
@@ -137,10 +143,10 @@ COMMENT                     \/\*((\*+[^/*])|([^*]))*\**\*\/
 <X_STRING_SPECIAL>{HEXNUM}{HEXNUM}              yy_pop_state(); *yylval.s += std::string(1, hex2dec(yytext)); //hex2dec converte hexadecimal para decimal
 <X_STRING_SPECIAL>{HEXNUM}                      yy_pop_state(); *yylval.s += std::string(1, hex2dec(yytext));
 
-[0-9]+                                          yylval.i = strtol(yytext, nullptr, 10); printLexeme("integer", yylval.i, yylineno); return tINTEGER;
+[0-9]+                                          yylval.i = strtol(yytext, nullptr, 10); printLexeme("l_integer", yylval.i, yylineno); return tLINTEGER;
+[0-9]+[.][0-9]+                                 yylval.f = strtof(yytext, nullptr); printLexeme("l_float", yylval.f, yylineno); return yylval.f; return tLFLOAT;                            
 
-[-()<>=+*/%;{}.]                                return *yytext;
-[()=;]                                          return *yytext;
+[-+*()=;,]                                      return *yytext;
 
 {WHITESPACE}                                    ; /* ignore whitespace */
 

@@ -12,7 +12,8 @@
 %}
 
 %union {
-  int                   i;	/* integer value */
+  int                  i;	/* integer value */
+  float                f;       /* float value */
   std::string          *s;	/* symbol name or string literal */
   cdk::basic_node      *node;	/* node pointer */
   cdk::sequence_node   *sequence;
@@ -20,9 +21,12 @@
   zu::lvalue_node      *lvalue;
 };
 
-%token <i> tINTEGER tFLOAT
-%token <s> tIDENTIFIER tSTRING 
-%token tWHILE tIF tPRINT tREAD tBEGIN tEND
+/* tLSTRING: string literal. 
+*/
+%token <i> tLINTEGER 
+%token <s> tIDENTIFIER tLSTRING  
+%token <f> tLFLOAT
+%token tWHILE tIF tPRINT tREAD tBEGIN tEND tSTRING tFLOAT tINTEGER
 
 %nonassoc tIFX
 %nonassoc tELSE
@@ -49,12 +53,14 @@ list : stmt	                        { $$ = new cdk::sequence_node(LINE, $1); }
     | list stmt                         { $$ = new cdk::sequence_node(LINE, $2, $1); }
     ;
 
-stmt : expr ';'                         { $$ = new zu::evaluation_node(LINE, $1); }
+stmt : variable ';'                     {}
+     | function                         {}
+   /*: expr ';'                         { $$ = new zu::evaluation_node(LINE, $1); }
      | tPRINT expr ';'                  { $$ = new zu::print_node(LINE, $2); }
      | tREAD lval ';'                   { $$ = new zu::read_node(LINE, $2); }
      | tIF '(' expr ')' stmt tELSE stmt { $$ = new zu::if_else_node(LINE, $3, $5, $7); }
      | '{' list '}'                     { $$ = $2; }
-     ;
+   */;
    
 /* id_func!() -> funçao global 
    id_func?() -> funcao definida noutro modulo
@@ -90,17 +96,28 @@ function : tINTEGER tIDENTIFIER  '(' ')'                {/*FIXME*/}
          | '!' tIDENTIFIER '?' '(' arguments ')'        {/* funçao que retorna void:FIXME*/}
          ;
    
-/* Os argumentos de uma funça0: uma ou mais variaveis. */
+/* Os argumentos de uma funçao: uma ou mais variaveis. */
 arguments: variable                                     {}
          | arguments ',' variable                       {}
          ;
          
-/*  */
-variable : //FIXME
+/* falta implementar [= expressao]  */
+variable : type tIDENTIFIER
+         | type tIDENTIFIER '!'
+         | type tIDENTIFIER '?'
+         | 
          ; 
       
-expr : tINTEGER                        { $$ = new cdk::integer_node(LINE, $1); }
-     | tSTRING                         { $$ = new cdk::string_node(LINE, $1); }
+/* tipos primitivos */
+type : tINTEGER                                         {}
+     | tFLOAT                                           {}
+     | tSTRING                                          {}
+     | '<' type '>'
+     ;
+      
+expr : tLINTEGER                       { $$ = new cdk::integer_node(LINE, $1); }
+     | tLSTRING                        { $$ = new cdk::string_node(LINE, $1); }
+     | tLFLOAT                         { $$ = new cdk::double_node(LINE, $1);}
      | '-' expr %prec tUNARY           { $$ = new cdk::neg_node(LINE, $2); }
      | expr '+' expr	               { $$ = new cdk::add_node(LINE, $1, $3); }
      | expr '-' expr	               { $$ = new cdk::sub_node(LINE, $1, $3); }
