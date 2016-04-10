@@ -1,5 +1,5 @@
 %{
-// $Id: zu_parser.y,v 1.3 2016/03/17 22:22:33 ist175838 Exp $
+// $Id: zu_parser.y,v 1.4 2016/04/09 16:50:10 ist175838 Exp $
 //-- don't change *any* of these: if you do, you'll break the compiler.
 #include <cdk/compiler.h>
 #include "ast/all.h"
@@ -20,8 +20,8 @@
   zu::lvalue_node      *lvalue;
 };
 
-%token <i> tINTEGER
-%token <s> tIDENTIFIER tSTRING
+%token <i> tINTEGER tFLOAT
+%token <s> tIDENTIFIER tSTRING 
 %token tWHILE tIF tPRINT tREAD tBEGIN tEND
 
 %nonassoc tIFX
@@ -33,10 +33,11 @@
 %left '*' '/' '%'
 %nonassoc tUNARY
 
-%type <node> stmt program
+%type <node> stmt 
 %type <sequence> list
 %type <expression> expr
 %type <lvalue> lval
+//FIXME: completar lista <node>:regra
 
 %{
 //-- The rules below will be included in yyparse, the main parsing function.
@@ -54,27 +55,72 @@ stmt : expr ';'                         { $$ = new zu::evaluation_node(LINE, $1)
      | tIF '(' expr ')' stmt tELSE stmt { $$ = new zu::if_else_node(LINE, $3, $5, $7); }
      | '{' list '}'                     { $$ = $2; }
      ;
-
-expr : tINTEGER                { $$ = new cdk::integer_node(LINE, $1); }
-     | tSTRING                 { $$ = new cdk::string_node(LINE, $1); }
-     | '-' expr %prec tUNARY   { $$ = new cdk::neg_node(LINE, $2); }
-     | expr '+' expr	         { $$ = new cdk::add_node(LINE, $1, $3); }
-     | expr '-' expr	         { $$ = new cdk::sub_node(LINE, $1, $3); }
-     | expr '*' expr	         { $$ = new cdk::mul_node(LINE, $1, $3); }
-     | expr '/' expr	         { $$ = new cdk::div_node(LINE, $1, $3); }
-     | expr '%' expr	         { $$ = new cdk::mod_node(LINE, $1, $3); }
-     | expr '<' expr	         { $$ = new cdk::lt_node(LINE, $1, $3); }
-     | expr '>' expr	         { $$ = new cdk::gt_node(LINE, $1, $3); }
-     | expr tGE expr	         { $$ = new cdk::ge_node(LINE, $1, $3); }
-     | expr tLE expr           { $$ = new cdk::le_node(LINE, $1, $3); }
-     | expr tNE expr	         { $$ = new cdk::ne_node(LINE, $1, $3); }
-     | expr tEQ expr	         { $$ = new cdk::eq_node(LINE, $1, $3); }
-     | '(' expr ')'            { $$ = $2; }
-     | lval                    { $$ = new zu::rvalue_node(LINE, $1); }  //FIXME
-     | lval '=' expr           { $$ = new zu::assignment_node(LINE, $1, $3); }
+   
+/* id_func!() -> funçao global 
+   id_func?() -> funcao definida noutro modulo
+   
+   !id_func() -> retorna void
+*/
+function : tINTEGER tIDENTIFIER  '(' ')'                {/*FIXME*/}
+         | tINTEGER tIDENTIFIER  '(' arguments ')'      {/*FIXME*/}
+         | tINTEGER tIDENTIFIER '!' '(' ')'             {/*FIXME*/}
+         | tINTEGER tIDENTIFIER '!' '(' arguments ')'   {/*FIXME*/}
+         | tINTEGER tIDENTIFIER '?' '(' ')'             {/*FIXME*/}
+         | tINTEGER tIDENTIFIER '?' '(' arguments ')'   {/*FIXME*/}
+         
+         | tFLOAT tIDENTIFIER '(' ')'                   {/*FIXME */}
+         | tFLOAT tIDENTIFIER '(' arguments ')'         {/*FIXME */}
+         | tFLOAT tIDENTIFIER '!' '(' ')'               {/*FIXME */}
+         | tFLOAT tIDENTIFIER '!' '(' arguments')'      {/*FIXME */}
+         | tFLOAT tIDENTIFIER '?' '(' ')'               {/*FIXME */}
+         | tFLOAT tIDENTIFIER '?' '(' arguments ')'     {/*FIXME */}
+         
+         | tSTRING tIDENTIFIER  '(' ')'                 {/*FIXME*/}
+         | tSTRING tIDENTIFIER  '(' arguments ')'       {/*FIXME*/}
+         | tSTRING tIDENTIFIER '!' '(' ')'              {/*FIXME*/}
+         | tSTRING tIDENTIFIER '!' '(' arguments ')'    {/*FIXME*/}
+         | tSTRING tIDENTIFIER '?' '(' ')'              {/*FIXME*/}
+         | tSTRING tIDENTIFIER '?' '(' arguments ')'    {/*FIXME*/}
+         
+         | '!' tIDENTIFIER '(' ')'                      {/* funçao que retorna void:FIXME*/}
+         | '!' tIDENTIFIER '(' arguments ')'            {/* funçao que retorna void:FIXME*/}
+         | '!' tIDENTIFIER '!' '(' ')'                  {/* funçao que retorna void:FIXME*/}
+         | '!' tIDENTIFIER '!' '(' arguments ')'        {/* funçao que retorna void:FIXME*/}
+         | '!' tIDENTIFIER '!' '(' ')'                  {/* funçao que retorna void:FIXME*/}
+         | '!' tIDENTIFIER '?' '(' arguments ')'        {/* funçao que retorna void:FIXME*/}
+         ;
+   
+/* Os argumentos de uma funça0: uma ou mais variaveis. */
+arguments: variable                                     {}
+         | arguments ',' variable                       {}
+         ;
+         
+/*  */
+variable : //FIXME
+         ; 
+      
+expr : tINTEGER                        { $$ = new cdk::integer_node(LINE, $1); }
+     | tSTRING                         { $$ = new cdk::string_node(LINE, $1); }
+     | '-' expr %prec tUNARY           { $$ = new cdk::neg_node(LINE, $2); }
+     | expr '+' expr	               { $$ = new cdk::add_node(LINE, $1, $3); }
+     | expr '-' expr	               { $$ = new cdk::sub_node(LINE, $1, $3); }
+     | expr '*' expr	               { $$ = new cdk::mul_node(LINE, $1, $3); }
+     | expr '/' expr	               { $$ = new cdk::div_node(LINE, $1, $3); }
+     | expr '%' expr	               { $$ = new cdk::mod_node(LINE, $1, $3); }
+     | expr '<' expr	               { $$ = new cdk::lt_node(LINE, $1, $3); }
+     | expr '>' expr	               { $$ = new cdk::gt_node(LINE, $1, $3); }
+     | expr tGE expr	               { $$ = new cdk::ge_node(LINE, $1, $3); }
+     | expr tLE expr                   { $$ = new cdk::le_node(LINE, $1, $3); }
+     | expr tNE expr	               { $$ = new cdk::ne_node(LINE, $1, $3); }
+     | expr tEQ expr	               { $$ = new cdk::eq_node(LINE, $1, $3); }
+     | '(' expr ')'                    { $$ = $2; }
+     | lval                            { $$ = new zu::rvalue_node(LINE, $1); }  //FIXME
+     | lval '=' expr                   { $$ = new zu::assignment_node(LINE, $1, $3); }
      ;
 
 lval : tIDENTIFIER             { $$ = new zu::lvalue_node(LINE, $1); }
      ;
-
+     
+epsilon :
+        ;
 %%

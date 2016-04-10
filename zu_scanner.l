@@ -1,7 +1,7 @@
 %option c++ yyclass="zu_scanner" outfile="zu_scanner.cpp"
 %option stack noyywrap yylineno 8bit
 %{ 
-/* $Id: zu_scanner.l,v 1.3 2016/04/07 13:34:32 ist175838 Exp $ */
+/* $Id: zu_scanner.l,v 1.4 2016/04/09 16:50:10 ist175838 Exp $ */
 // make relevant includes before including the parser's tab file
 #include <string>
 #include "math.h"
@@ -89,7 +89,6 @@ LINE_COMMENT                \/\/.*
 COMMENT                     \/\*((\*+[^/*])|([^*]))*\**\*\/
 
 /* ========================================== */
-FUNCTION_DEFINITION         \#{IDENTIFIER}{WHITESPACE}\(\){WHITESPACE}\{.*\}
 
 /* X_STRING: estado para quando entramos numa string.
    X_EOF_STRING: estado para quando estamos numa string e encontramos '\0'. Dai ate ao final da string ignora-se os caracteres.
@@ -105,6 +104,10 @@ FUNCTION_DEFINITION         \#{IDENTIFIER}{WHITESPACE}\(\){WHITESPACE}\{.*\}
 "<="                                            printLexeme(yytext, yylineno);return tLE; 
 "=="                                            printLexeme(yytext, yylineno);return tEQ; 
 "!="                                            printLexeme(yytext, yylineno);return tNE; 
+
+#                                               return tINTEGER;
+\$                                              return tSTRING;
+%                                               return tFLOAT;
 
 [A-Za-z][A-Za-z0-9_]*                           yylval.s = new std::string(yytext); printLexeme("identifier", *yylval.s, yylineno); return tIDENTIFIER;
 
@@ -136,9 +139,8 @@ FUNCTION_DEFINITION         \#{IDENTIFIER}{WHITESPACE}\(\){WHITESPACE}\{.*\}
 
 [0-9]+                                          yylval.i = strtol(yytext, nullptr, 10); printLexeme("integer", yylval.i, yylineno); return tINTEGER;
 
-{FUNCTION_DEFINITION}                           ;
-
 [-()<>=+*/%;{}.]                                return *yytext;
+[()=;]                                          return *yytext;
 
 {WHITESPACE}                                    ; /* ignore whitespace */
 
