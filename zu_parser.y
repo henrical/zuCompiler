@@ -26,14 +26,15 @@
 %token <i> tLINTEGER 
 %token <s> tIDENTIFIER tLSTRING  
 %token <f> tLFLOAT
-%token tWHILE tIF tPRINT tREAD tBEGIN tEND tSTRING tFLOAT tINTEGER
+%token tWHILE tIF tPRINT tREAD tBEGIN tEND tSTRING tFLOAT tINTEGER tGT tLT
 
 %nonassoc tIFX
 %nonassoc tELSE
 
 %right '='
-%left tGE tLE tEQ tNE '>' '<'
+%left tGE tLE tEQ tNE tGT tLT
 %left '+' '-'
+%left '&' '|'
 %left '*' '/' '%'
 %nonassoc tUNARY
 
@@ -115,27 +116,42 @@ type : tINTEGER                                         {}
      | '<' type '>'
      ;
       
+/*Falta:
+    indexaçao
+    
+*/
 expr : tLINTEGER                       { $$ = new cdk::integer_node(LINE, $1); }
      | tLSTRING                        { $$ = new cdk::string_node(LINE, $1); }
      | tLFLOAT                         { $$ = new cdk::double_node(LINE, $1);}
-     | '-' expr %prec tUNARY           { $$ = new cdk::neg_node(LINE, $2); }
+     
+     | '-' expr %prec tUNARY           { $$ = new zu::symmetry_node(LINE, $2); }
+     | '+' expr %prec tUNARY           { $$ = new zu::identity_node(LINE, $2);}
+     | expr '?' %prec tUNARY           { $$ = new zu::memory_address_node(LINE, $1);/* Not sure about this*/} 
+     
+     /*funciona so so inteiros, dado que nao existem booleanos. ~0 = 1 = false e ~1 = 0 = true */
+     | '~' expr %prec tUNARY           { $$ = new cdk::neg_node(LINE, $2); } 
+      
+     | expr '|' expr                   { $$ = new zu::or_node(LINE, $1, $3); }
+     | expr '&' expr                   { $$ = new zu::and_node(LINE, $1, $3); }
+     
      | expr '+' expr	               { $$ = new cdk::add_node(LINE, $1, $3); }
      | expr '-' expr	               { $$ = new cdk::sub_node(LINE, $1, $3); }
      | expr '*' expr	               { $$ = new cdk::mul_node(LINE, $1, $3); }
      | expr '/' expr	               { $$ = new cdk::div_node(LINE, $1, $3); }
-     | expr '%' expr	               { $$ = new cdk::mod_node(LINE, $1, $3); }
-     | expr '<' expr	               { $$ = new cdk::lt_node(LINE, $1, $3); }
-     | expr '>' expr	               { $$ = new cdk::gt_node(LINE, $1, $3); }
+     | expr '%' expr	               { $$ = new cdk::mod_node(LINE, $1, $3); } /* '%' e apenas para inteiros */
+     | expr tLT expr	               { $$ = new cdk::lt_node(LINE, $1, $3); }
+     | expr tGT expr	               { $$ = new cdk::gt_node(LINE, $1, $3); }
      | expr tGE expr	               { $$ = new cdk::ge_node(LINE, $1, $3); }
      | expr tLE expr                   { $$ = new cdk::le_node(LINE, $1, $3); }
      | expr tNE expr	               { $$ = new cdk::ne_node(LINE, $1, $3); }
      | expr tEQ expr	               { $$ = new cdk::eq_node(LINE, $1, $3); }
+     
      | '(' expr ')'                    { $$ = $2; }
      | lval                            { $$ = new zu::rvalue_node(LINE, $1); }  //FIXME
      | lval '=' expr                   { $$ = new zu::assignment_node(LINE, $1, $3); }
      ;
 
-lval : tIDENTIFIER             { $$ = new zu::lvalue_node(LINE, $1); }
+lval : tIDENTIFIER                     { $$ = new zu::lvalue_node(LINE, $1); }
      ;
      
 epsilon :

@@ -98,7 +98,7 @@ COMMENT                     \/\*((\*+[^/*])|([^*]))*\**\*\/
 
 /* X_STRING: estado para quando entramos numa string.
    X_EOF_STRING: estado para quando estamos numa string e encontramos '\0'. Dai ate ao final da string ignora-se os caracteres.
-   X_STRING_SPECIAL: estado para quando estamos numa string e encontramos '\', que e o inicio de uma caracter especial.
+   X_STRING_SPECIAL: estado para quando estamos numa string e encontramos '\', que e o inicio de um caracter especial.
 */
 %x X_STRING X_STRING_SPECIAL X_EOF_STRING
 %%
@@ -106,10 +106,12 @@ COMMENT                     \/\*((\*+[^/*])|([^*]))*\**\*\/
 {LINE_COMMENT}                                  ; print("skipping line comment", yylineno);
 {COMMENT}                                       ; print("skipping multi-line comment", yylineno);
 
-">="                                            printLexeme(yytext, yylineno);return tGE; 
-"<="                                            printLexeme(yytext, yylineno);return tLE; 
-"=="                                            printLexeme(yytext, yylineno);return tEQ; 
-"!="                                            printLexeme(yytext, yylineno);return tNE; 
+"<"                                             printLexeme("less than", yytext, yylineno);return tLT; 
+">"                                             printLexeme("greater than", yytext, yylineno);return tGT; 
+">="                                            printLexeme("greater|equal than", yytext, yylineno);return tGE; 
+"<="                                            printLexeme("less|equal than", yytext, yylineno);return tLE; 
+"=="                                            printLexeme("equal to", yytext, yylineno);return tEQ; 
+"!="                                            printLexeme("different than", yytext, yylineno);return tNE; 
 
 "#"                                             printLexeme("integer", "#", yylineno); return tINTEGER; 
 "$"                                             printLexeme("string", "$", yylineno); return tSTRING; 
@@ -146,7 +148,7 @@ COMMENT                     \/\*((\*+[^/*])|([^*]))*\**\*\/
 [0-9]+                                          yylval.i = strtol(yytext, nullptr, 10); printLexeme("l_integer", yylval.i, yylineno); return tLINTEGER;
 [0-9]+[.][0-9]+                                 yylval.f = strtof(yytext, nullptr); printLexeme("l_float", yylval.f, yylineno); return yylval.f; return tLFLOAT;                            
 
-[-+*()=;,]                                      return *yytext;
+[-+?!*()=;,]                                      return *yytext;
 
 {WHITESPACE}                                    ; /* ignore whitespace */
 

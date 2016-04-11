@@ -361,8 +361,8 @@ int yyFlexLexer::yylex()
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
 
-#define YY_NUM_RULES 33
-#define YY_END_OF_BUFFER 34
+#define YY_NUM_RULES 35
+#define YY_END_OF_BUFFER 36
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -372,13 +372,13 @@ struct yy_trans_info
 	};
 static yyconst flex_int16_t yy_accept[65] =
     {   0,
-        0,    0,    0,    0,    0,    0,    0,    0,   34,   32,
-       31,   31,   32,   11,    7,    8,    9,   30,   32,   28,
-       32,   30,   32,   10,   17,   18,   14,   16,   33,   24,
-       27,   25,   21,   23,   22,   20,   19,   31,    6,    0,
-        1,    0,   28,    4,    5,    3,   10,    0,   12,    0,
-       15,   26,    0,    0,    1,   29,    0,    2,    0,    0,
-        0,    0,   13,    0
+        0,    0,    0,    0,    0,    0,    0,    0,   36,   34,
+       33,   33,   32,   13,    9,   10,   11,   32,   34,   30,
+        3,   32,    4,   12,   19,   20,   16,   18,   35,   26,
+       29,   27,   23,   25,   24,   22,   21,   33,    8,    0,
+        1,    0,   30,    6,    7,    5,   12,    0,   14,    0,
+       17,   28,    0,    0,    1,   31,    0,    2,    0,    0,
+        0,    0,   15,    0
     } ;
 
 static yyconst flex_int32_t yy_ec[256] =
@@ -389,7 +389,7 @@ static yyconst flex_int32_t yy_ec[256] =
         1,    2,    4,    5,    6,    7,    8,    1,    1,    9,
         9,   10,    9,    9,    9,   11,   12,   13,   14,   14,
        14,   14,   14,   14,   14,   14,   14,    1,    9,   15,
-       16,   17,    1,    1,   18,   18,   18,   18,   18,   18,
+       16,   17,    9,    1,   18,   18,   18,   18,   18,   18,
        19,   19,   19,   19,   19,   19,   19,   19,   19,   19,
        19,   19,   19,   19,   19,   19,   19,   19,   19,   19,
         1,   20,    1,    1,   21,    1,   18,   18,   18,   18,
@@ -483,10 +483,10 @@ static yyconst flex_int16_t yy_chk[140] =
     } ;
 
 /* Table of booleans, true if rule could match eol. */
-static yyconst flex_int32_t yy_rule_can_match_eol[34] =
+static yyconst flex_int32_t yy_rule_can_match_eol[36] =
     {   0,
-0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,     };
+0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 
+    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,     };
 
 /* The intent behind this definition is that it'll catch
  * any uses of REJECT which flex missed.
@@ -574,7 +574,7 @@ int hex2dec(std::string hex)
 /* ========================================== */
 /* X_STRING: estado para quando entramos numa string.
    X_EOF_STRING: estado para quando estamos numa string e encontramos '\0'. Dai ate ao final da string ignora-se os caracteres.
-   X_STRING_SPECIAL: estado para quando estamos numa string e encontramos '\', que e o inicio de uma caracter especial.
+   X_STRING_SPECIAL: estado para quando estamos numa string e encontramos '\', que e o inicio de um caracter especial.
 */
 
 #line 581 "zu_scanner.cpp"
@@ -796,164 +796,174 @@ YY_RULE_SETUP
 case 3:
 YY_RULE_SETUP
 #line 109 "zu_scanner.l"
-printLexeme(yytext, yylineno);return tGE; 
+printLexeme("less than", yytext, yylineno);return tLT; 
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 110 "zu_scanner.l"
-printLexeme(yytext, yylineno);return tLE; 
+printLexeme("greater than", yytext, yylineno);return tGT; 
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 111 "zu_scanner.l"
-printLexeme(yytext, yylineno);return tEQ; 
+printLexeme("greater|equal than", yytext, yylineno);return tGE; 
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 112 "zu_scanner.l"
-printLexeme(yytext, yylineno);return tNE; 
+printLexeme("less|equal than", yytext, yylineno);return tLE; 
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 114 "zu_scanner.l"
-printLexeme("integer", "#", yylineno); return tINTEGER; 
+#line 113 "zu_scanner.l"
+printLexeme("equal to", yytext, yylineno);return tEQ; 
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 115 "zu_scanner.l"
-printLexeme("string", "$", yylineno); return tSTRING; 
+#line 114 "zu_scanner.l"
+printLexeme("different than", yytext, yylineno);return tNE; 
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 116 "zu_scanner.l"
-printLexeme("float", "%", yylineno);  return tFLOAT; 
+printLexeme("integer", "#", yylineno); return tINTEGER; 
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 118 "zu_scanner.l"
-yylval.s = new std::string(yytext); printLexeme("identifier", *yylval.s, yylineno); return tIDENTIFIER;
+#line 117 "zu_scanner.l"
+printLexeme("string", "$", yylineno); return tSTRING; 
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 121 "zu_scanner.l"
-yy_push_state(X_STRING); yylval.s = new std::string("");
+#line 118 "zu_scanner.l"
+printLexeme("float", "%", yylineno);  return tFLOAT; 
 	YY_BREAK
 case 12:
-/* rule 12 can match eol */
 YY_RULE_SETUP
-#line 122 "zu_scanner.l"
-;
+#line 120 "zu_scanner.l"
+yylval.s = new std::string(yytext); printLexeme("identifier", *yylval.s, yylineno); return tIDENTIFIER;
 	YY_BREAK
 case 13:
-/* rule 13 can match eol */
 YY_RULE_SETUP
 #line 123 "zu_scanner.l"
-;/* esta regra serve para ignorar comentarios entre strings */  
+yy_push_state(X_STRING); yylval.s = new std::string("");
 	YY_BREAK
 case 14:
+/* rule 14 can match eol */
 YY_RULE_SETUP
 #line 124 "zu_scanner.l"
-yy_pop_state(); printLexeme("l_string", *yylval.s, yylineno); return tLSTRING;
+;
 	YY_BREAK
 case 15:
+/* rule 15 can match eol */
 YY_RULE_SETUP
-#line 126 "zu_scanner.l"
-yy_push_state(X_EOF_STRING); /* encontrar '\0' faz ignorar o resto da string */
+#line 125 "zu_scanner.l"
+;/* esta regra serve para ignorar comentarios entre strings */  
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 128 "zu_scanner.l"
-yy_push_state(X_STRING_SPECIAL); /* encontrar '\' faz ir para estado de caracter especial */
+#line 126 "zu_scanner.l"
+yy_pop_state(); printLexeme("l_string", *yylval.s, yylineno); return tLSTRING;
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 130 "zu_scanner.l"
-*yylval.s += yytext;
+#line 128 "zu_scanner.l"
+yy_push_state(X_EOF_STRING); /* encontrar '\0' faz ignorar o resto da string */
 	YY_BREAK
 case 18:
-/* rule 18 can match eol */
 YY_RULE_SETUP
-#line 131 "zu_scanner.l"
-yyerror("Error: Newline inside string.");
+#line 130 "zu_scanner.l"
+yy_push_state(X_STRING_SPECIAL); /* encontrar '\' faz ir para estado de caracter especial */
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 133 "zu_scanner.l"
-{ yyless(yyleng - 1); /*isto devolve uma aspa ao input para o estado X_STRING ler*/
-                                                  yy_pop_state(); }
+#line 132 "zu_scanner.l"
+*yylval.s += yytext;
 	YY_BREAK
 case 20:
+/* rule 20 can match eol */
 YY_RULE_SETUP
-#line 135 "zu_scanner.l"
-; /* caracteres depois de '\0' sao ignorados */
+#line 133 "zu_scanner.l"
+yyerror("Error: Newline inside string.");
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 138 "zu_scanner.l"
-yy_pop_state(); *yylval.s += std::string(1, 10);/* 10 e o cod. ascii do \n */
+#line 135 "zu_scanner.l"
+{ yyless(yyleng - 1); /*isto devolve uma aspa ao input para o estado X_STRING ler*/
+                                                  yy_pop_state(); }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 139 "zu_scanner.l"
-yy_pop_state(); *yylval.s += std::string(1, 9);/* 9 e o cod. ascii do \t */
+#line 137 "zu_scanner.l"
+; /* caracteres depois de '\0' sao ignorados */
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
 #line 140 "zu_scanner.l"
-yy_pop_state(); *yylval.s += std::string(1, 13);/* 13 e o cod. ascii do \r */
+yy_pop_state(); *yylval.s += std::string(1, 10);/* 10 e o cod. ascii do \n */
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
 #line 141 "zu_scanner.l"
-yy_pop_state(); *yylval.s += std::string(1, 34);/* 34 e o cod. ascii da aspa */
+yy_pop_state(); *yylval.s += std::string(1, 9);/* 9 e o cod. ascii do \t */
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
 #line 142 "zu_scanner.l"
-yy_pop_state(); *yylval.s += std::string(1, 92);/* 92 e o cod. ascii do backslash */
+yy_pop_state(); *yylval.s += std::string(1, 13);/* 13 e o cod. ascii do \r */
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
 #line 143 "zu_scanner.l"
-yy_pop_state(); *yylval.s += std::string(1, hex2dec(yytext)); //hex2dec converte hexadecimal para decimal
+yy_pop_state(); *yylval.s += std::string(1, 34);/* 34 e o cod. ascii da aspa */
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
 #line 144 "zu_scanner.l"
-yy_pop_state(); *yylval.s += std::string(1, hex2dec(yytext));
+yy_pop_state(); *yylval.s += std::string(1, 92);/* 92 e o cod. ascii do backslash */
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 146 "zu_scanner.l"
-yylval.i = strtol(yytext, nullptr, 10); printLexeme("l_integer", yylval.i, yylineno); return tLINTEGER;
+#line 145 "zu_scanner.l"
+yy_pop_state(); *yylval.s += std::string(1, hex2dec(yytext)); //hex2dec converte hexadecimal para decimal
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 147 "zu_scanner.l"
-yylval.f = strtof(yytext, nullptr); printLexeme("l_float", yylval.f, yylineno); return yylval.f; return tLFLOAT;                            
+#line 146 "zu_scanner.l"
+yy_pop_state(); *yylval.s += std::string(1, hex2dec(yytext));
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 149 "zu_scanner.l"
-return *yytext;
+#line 148 "zu_scanner.l"
+yylval.i = strtol(yytext, nullptr, 10); printLexeme("l_integer", yylval.i, yylineno); return tLINTEGER;
 	YY_BREAK
 case 31:
-/* rule 31 can match eol */
 YY_RULE_SETUP
-#line 151 "zu_scanner.l"
-; /* ignore whitespace */
+#line 149 "zu_scanner.l"
+yylval.f = strtof(yytext, nullptr); printLexeme("l_float", yylval.f, yylineno); return yylval.f; return tLFLOAT;                            
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 153 "zu_scanner.l"
-yyerror("Unknown character");
+#line 151 "zu_scanner.l"
+return *yytext;
 	YY_BREAK
 case 33:
+/* rule 33 can match eol */
+YY_RULE_SETUP
+#line 153 "zu_scanner.l"
+; /* ignore whitespace */
+	YY_BREAK
+case 34:
 YY_RULE_SETUP
 #line 155 "zu_scanner.l"
+yyerror("Unknown character");
+	YY_BREAK
+case 35:
+YY_RULE_SETUP
+#line 157 "zu_scanner.l"
 ECHO;
 	YY_BREAK
-#line 957 "zu_scanner.cpp"
+#line 967 "zu_scanner.cpp"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(X_STRING):
 case YY_STATE_EOF(X_STRING_SPECIAL):
@@ -1864,7 +1874,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 154 "zu_scanner.l"
+#line 156 "zu_scanner.l"
 
 
 // Very, very dirty hack: flex is a mess generating C++ scanners.

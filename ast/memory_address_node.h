@@ -5,14 +5,13 @@
 namespace zu {
 
   /**
-   * Class for describing program nodes.
+   * O operador unario '?' e usado para aceder ao endereço de uma expressao.
    */
-  class memory_address_node: public cdk::expression_node {
-    lvalue_node *_lvalue;
+  class memory_address_node: public cdk::unary_expression_node {
 
   public:
-    inline memory_address_node(int lineno, lvalue_node *lvalue)
-    :cdk::expression_node(lineno), _lvalue(lvalue)
+    inline memory_address_node(int lineno, cdk::expression_node *arg)
+    :cdk::unary_expression_node(lineno, arg)
     {
     };
         
