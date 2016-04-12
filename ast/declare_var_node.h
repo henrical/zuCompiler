@@ -20,7 +20,8 @@ class declare_var_node: public zu::variable_node  {
       zu::variable_node(lineno,identifier)
         ,_local(local),_import(import),_func_arg(func_arg),_isConst(isConst) {
 	_type=type;
-  }
+    }
+    
 
   public:
 

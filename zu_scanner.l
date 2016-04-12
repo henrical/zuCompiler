@@ -1,7 +1,7 @@
 %option c++ yyclass="zu_scanner" outfile="zu_scanner.cpp"
 %option stack noyywrap yylineno 8bit
 %{ 
-/* $Id: zu_scanner.l,v 1.4 2016/04/09 16:50:10 ist175838 Exp $ */
+/* $Id: zu_scanner.l,v 1.5 2016/04/11 20:36:33 ist175838 Exp $ */
 // make relevant includes before including the parser's tab file
 #include <string>
 #include "math.h"
@@ -37,7 +37,7 @@ void printLexeme(std::string token, int lexeme, int lineno)
     std::cout << "::: Read token \"" << token << "\", lexeme [" << lexeme << "] at line " <<lineno << std::endl;
 }
 
-void printLexeme(std::string token, float lexeme, int lineno)
+void printLexeme(std::string token, double lexeme, int lineno)
 {
     std::cout << "::: Read token \"" << token << "\", lexeme [" << lexeme << "] at line " <<lineno << std::endl;
 }
@@ -106,16 +106,16 @@ COMMENT                     \/\*((\*+[^/*])|([^*]))*\**\*\/
 {LINE_COMMENT}                                  ; print("skipping line comment", yylineno);
 {COMMENT}                                       ; print("skipping multi-line comment", yylineno);
 
-"<"                                             printLexeme("less than", yytext, yylineno);return tLT; 
-">"                                             printLexeme("greater than", yytext, yylineno);return tGT; 
 ">="                                            printLexeme("greater|equal than", yytext, yylineno);return tGE; 
 "<="                                            printLexeme("less|equal than", yytext, yylineno);return tLE; 
+"<"                                             printLexeme("less than", yytext, yylineno);return tLT; 
+">"                                             printLexeme("greater than", yytext, yylineno);return tGT; 
 "=="                                            printLexeme("equal to", yytext, yylineno);return tEQ; 
 "!="                                            printLexeme("different than", yytext, yylineno);return tNE; 
 
 "#"                                             printLexeme("integer", "#", yylineno); return tINTEGER; 
 "$"                                             printLexeme("string", "$", yylineno); return tSTRING; 
-"%"                                             printLexeme("float", "%", yylineno);  return tFLOAT; 
+"%"                                             printLexeme("float", "%", yylineno);  return tDOUBLE; 
 
 [A-Za-z][A-Za-z0-9_]*                           yylval.s = new std::string(yytext); printLexeme("identifier", *yylval.s, yylineno); return tIDENTIFIER;
 
@@ -146,7 +146,7 @@ COMMENT                     \/\*((\*+[^/*])|([^*]))*\**\*\/
 <X_STRING_SPECIAL>{HEXNUM}                      yy_pop_state(); *yylval.s += std::string(1, hex2dec(yytext));
 
 [0-9]+                                          yylval.i = strtol(yytext, nullptr, 10); printLexeme("l_integer", yylval.i, yylineno); return tLINTEGER;
-[0-9]+[.][0-9]+                                 yylval.f = strtof(yytext, nullptr); printLexeme("l_float", yylval.f, yylineno); return yylval.f; return tLFLOAT;                            
+[0-9]+[.][0-9]+                                 yylval.d = std::stod(yytext, nullptr); printLexeme("l_double", yylval.d, yylineno);  return tLDOUBLE;                            
 
 [-+?!*()=;,]                                      return *yytext;
 

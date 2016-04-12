@@ -374,9 +374,9 @@ static yyconst flex_int16_t yy_accept[65] =
     {   0,
         0,    0,    0,    0,    0,    0,    0,    0,   36,   34,
        33,   33,   32,   13,    9,   10,   11,   32,   34,   30,
-        3,   32,    4,   12,   19,   20,   16,   18,   35,   26,
+        5,   32,    6,   12,   19,   20,   16,   18,   35,   26,
        29,   27,   23,   25,   24,   22,   21,   33,    8,    0,
-        1,    0,   30,    6,    7,    5,   12,    0,   14,    0,
+        1,    0,   30,    4,    7,    3,   12,    0,   14,    0,
        17,   28,    0,    0,    1,   31,    0,    2,    0,    0,
         0,    0,   15,    0
     } ;
@@ -497,7 +497,7 @@ static yyconst flex_int32_t yy_rule_can_match_eol[36] =
 #define YY_RESTORE_YY_MORE_OFFSET
 #line 1 "zu_scanner.l"
 #line 4 "zu_scanner.l"
-/* $Id: zu_scanner.l,v 1.4 2016/04/09 16:50:10 ist175838 Exp $ */
+/* $Id: zu_scanner.l,v 1.5 2016/04/11 20:36:33 ist175838 Exp $ */
 // make relevant includes before including the parser's tab file
 #include <string>
 #include "math.h"
@@ -533,7 +533,7 @@ void printLexeme(std::string token, int lexeme, int lineno)
     std::cout << "::: Read token \"" << token << "\", lexeme [" << lexeme << "] at line " <<lineno << std::endl;
 }
 
-void printLexeme(std::string token, float lexeme, int lineno)
+void printLexeme(std::string token, double lexeme, int lineno)
 {
     std::cout << "::: Read token \"" << token << "\", lexeme [" << lexeme << "] at line " <<lineno << std::endl;
 }
@@ -796,22 +796,22 @@ YY_RULE_SETUP
 case 3:
 YY_RULE_SETUP
 #line 109 "zu_scanner.l"
-printLexeme("less than", yytext, yylineno);return tLT; 
+printLexeme("greater|equal than", yytext, yylineno);return tGE; 
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 110 "zu_scanner.l"
-printLexeme("greater than", yytext, yylineno);return tGT; 
+printLexeme("less|equal than", yytext, yylineno);return tLE; 
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 111 "zu_scanner.l"
-printLexeme("greater|equal than", yytext, yylineno);return tGE; 
+printLexeme("less than", yytext, yylineno);return tLT; 
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 112 "zu_scanner.l"
-printLexeme("less|equal than", yytext, yylineno);return tLE; 
+printLexeme("greater than", yytext, yylineno);return tGT; 
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
@@ -836,7 +836,7 @@ printLexeme("string", "$", yylineno); return tSTRING;
 case 11:
 YY_RULE_SETUP
 #line 118 "zu_scanner.l"
-printLexeme("float", "%", yylineno);  return tFLOAT; 
+printLexeme("float", "%", yylineno);  return tDOUBLE; 
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
@@ -940,7 +940,7 @@ yylval.i = strtol(yytext, nullptr, 10); printLexeme("l_integer", yylval.i, yylin
 case 31:
 YY_RULE_SETUP
 #line 149 "zu_scanner.l"
-yylval.f = strtof(yytext, nullptr); printLexeme("l_float", yylval.f, yylineno); return yylval.f; return tLFLOAT;                            
+yylval.d = std::stod(yytext, nullptr); printLexeme("l_double", yylval.d, yylineno);  return tLDOUBLE;                            
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
