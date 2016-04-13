@@ -1,5 +1,5 @@
 %{
-// $Id: zu_parser.y,v 1.6 2016/04/12 19:47:25 ist175838 Exp $
+// $Id: zu_parser.y,v 1.7 2016/04/13 13:38:37 ist175838 Exp $
 //-- don't change *any* of these: if you do, you'll break the compiler.
 #include <cdk/compiler.h>
 #include "ast/all.h"
@@ -40,14 +40,12 @@
 %left '*' '/' '%'
 %nonassoc tUNARY
 
-%type <node> assign_variable
-%type <sequence> stmt list arguments expr_arguments
+%type <node> stmt assign_variable
+%type <sequence> list arguments expr_arguments
 %type <expression> expr literal variable_expr func_call
 %type <lvalue> lval declare_variable
 %type <type> type
 %type <funcdecl> function
-
-//FIXME: completar lista <node>:regra
 
 %{
 //-- The rules below will be included in yyparse, the main parsing function.
@@ -62,8 +60,8 @@ list : stmt	                        { $$ = new cdk::sequence_node(LINE, $1); }
      | list stmt                        { $$ = new cdk::sequence_node(LINE, $2, $1); }
      ;
 
-stmt : assign_variable ';'              { }
-     | function                         {}
+stmt : assign_variable ';'              { $$ = $1;}
+     | function                         { $$ = $1;}
      ;
    
 /* id_func!() -> funçao global 
@@ -93,8 +91,8 @@ declare_variable : type tIDENTIFIER                     { $$ = new zu::declare_v
                  | type tIDENTIFIER '?'                 { $$ = new zu::declare_var_node(LINE,$1, $2, true, true, false, false);}
                  ; 
       
-assign_variable : declare_variable '=' expr             { $$ = new zu::assignment_node(LINE, $1, $3 ); }         
-                | declare_variable                      { $$ = $1; }
+assign_variable : declare_variable                      { $$ = $1; }
+                | declare_variable '=' expr             { $$ = new zu::assignment_node(LINE, $1, $3 ); }
                 ;
                 
 /* tipos primitivos */
@@ -104,7 +102,7 @@ type : tINTEGER                                         { $$ = new basic_type(4,
      | '<' type '>'                                     { $$ = new basic_type(4, basic_type::TYPE_POINTER); }
      ;
      
-literal : tLSTRING                                      { $$ = new cdk::string_node(LINE, $1); }
+literal : tLINTEGER                                     { $$ = new cdk::integer_node(LINE, $1); }
         | tLSTRING                                      { $$ = new cdk::string_node(LINE, $1); }
         | tLDOUBLE                                      { $$ = new cdk::double_node(LINE, $1); }
         ;

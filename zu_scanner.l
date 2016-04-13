@@ -108,7 +108,7 @@ COMMENT                     \/\*((\*+[^/*])|([^*]))*\**\*\/
 
 ">="                                            printLexeme("greater|equal than", yytext, yylineno);return tGE; 
 "<="                                            printLexeme("less|equal than", yytext, yylineno);return tLE; 
-"<"                                             printLexeme("less than", yytext, yylineno);return tLT; 
+"<"                                             printLexeme("less than", yytext, yylineno);return tLT; /*FIXME: esta regra entra em conflito com declaraçao de ponteiros*/
 ">"                                             printLexeme("greater than", yytext, yylineno);return tGT; 
 "=="                                            printLexeme("equal to", yytext, yylineno);return tEQ; 
 "!="                                            printLexeme("different than", yytext, yylineno);return tNE; 
@@ -145,8 +145,10 @@ COMMENT                     \/\*((\*+[^/*])|([^*]))*\**\*\/
 <X_STRING_SPECIAL>{HEXNUM}{HEXNUM}              yy_pop_state(); *yylval.s += std::string(1, hex2dec(yytext)); //hex2dec converte hexadecimal para decimal
 <X_STRING_SPECIAL>{HEXNUM}                      yy_pop_state(); *yylval.s += std::string(1, hex2dec(yytext));
 
+
+[0-9]+[.][0-9]+                                 yylval.d = std::stod(yytext, nullptr); printLexeme("l_double", yylval.d, yylineno);  return tLDOUBLE;
+
 [0-9]+                                          yylval.i = strtol(yytext, nullptr, 10); printLexeme("l_integer", yylval.i, yylineno); return tLINTEGER;
-[0-9]+[.][0-9]+                                 yylval.d = std::stod(yytext, nullptr); printLexeme("l_double", yylval.d, yylineno);  return tLDOUBLE;                            
 
 [-+?!*()=;,]                                      return *yytext;
 

@@ -373,11 +373,11 @@ struct yy_trans_info
 static yyconst flex_int16_t yy_accept[65] =
     {   0,
         0,    0,    0,    0,    0,    0,    0,    0,   36,   34,
-       33,   33,   32,   13,    9,   10,   11,   32,   34,   30,
+       33,   33,   32,   13,    9,   10,   11,   32,   34,   31,
         5,   32,    6,   12,   19,   20,   16,   18,   35,   26,
        29,   27,   23,   25,   24,   22,   21,   33,    8,    0,
-        1,    0,   30,    4,    7,    3,   12,    0,   14,    0,
-       17,   28,    0,    0,    1,   31,    0,    2,    0,    0,
+        1,    0,   31,    4,    7,    3,   12,    0,   14,    0,
+       17,   28,    0,    0,    1,   30,    0,    2,    0,    0,
         0,    0,   15,    0
     } ;
 
@@ -806,7 +806,7 @@ printLexeme("less|equal than", yytext, yylineno);return tLE;
 case 5:
 YY_RULE_SETUP
 #line 111 "zu_scanner.l"
-printLexeme("less than", yytext, yylineno);return tLT; 
+printLexeme("less than", yytext, yylineno);return tLT; /*FIXME: esta regra entra em conflito com declaraçao de ponteiros*/
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
@@ -934,33 +934,33 @@ yy_pop_state(); *yylval.s += std::string(1, hex2dec(yytext));
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 148 "zu_scanner.l"
-yylval.i = strtol(yytext, nullptr, 10); printLexeme("l_integer", yylval.i, yylineno); return tLINTEGER;
+#line 149 "zu_scanner.l"
+yylval.d = std::stod(yytext, nullptr); printLexeme("l_double", yylval.d, yylineno);  return tLDOUBLE;
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 149 "zu_scanner.l"
-yylval.d = std::stod(yytext, nullptr); printLexeme("l_double", yylval.d, yylineno);  return tLDOUBLE;                            
+#line 151 "zu_scanner.l"
+yylval.i = strtol(yytext, nullptr, 10); printLexeme("l_integer", yylval.i, yylineno); return tLINTEGER;
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 151 "zu_scanner.l"
+#line 153 "zu_scanner.l"
 return *yytext;
 	YY_BREAK
 case 33:
 /* rule 33 can match eol */
 YY_RULE_SETUP
-#line 153 "zu_scanner.l"
+#line 155 "zu_scanner.l"
 ; /* ignore whitespace */
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 155 "zu_scanner.l"
+#line 157 "zu_scanner.l"
 yyerror("Unknown character");
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 157 "zu_scanner.l"
+#line 159 "zu_scanner.l"
 ECHO;
 	YY_BREAK
 #line 967 "zu_scanner.cpp"
@@ -1874,7 +1874,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 156 "zu_scanner.l"
+#line 158 "zu_scanner.l"
 
 
 // Very, very dirty hack: flex is a mess generating C++ scanners.
