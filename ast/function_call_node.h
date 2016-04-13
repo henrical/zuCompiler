@@ -8,18 +8,18 @@ namespace zu {
    * Class for describing program nodes.
    */
   class function_call_node: public cdk::expression_node {
-    std::string _functionIdentifier; //usar identifier_node?
+    std::string *_functionIdentifier; //usar identifier_node?
     cdk::sequence_node *_arguments;
 
   public:
-    inline function_call_node(int lineno, std::string f_identifier, cdk::sequence_node *arguments)
+    inline function_call_node(int lineno, std::string *f_identifier, cdk::sequence_node *arguments)
     :cdk::expression_node(lineno), _functionIdentifier(f_identifier), _arguments(arguments)
     {
     };
     
     inline std::string functionIdentifier()
     {
-        return _functionIdentifier;
+        return *_functionIdentifier;
     }
     
     inline cdk::sequence_node* arguments()

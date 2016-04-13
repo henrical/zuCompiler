@@ -1,4 +1,4 @@
-// $Id: declare_var_node.h,v 1.2 2016/04/06 16:20:27 ist175838 Exp $ -*- c++ -*-
+// $Id: declare_var_node.h,v 1.3 2016/04/12 19:47:25 ist175838 Exp $ -*- c++ -*-
 #ifndef __ZU_DECLAREVARNODE_H__
 #define __ZU_DECLAREVARDNODE_H__
 
@@ -21,7 +21,6 @@ class declare_var_node: public zu::variable_node  {
         ,_local(local),_import(import),_func_arg(func_arg),_isConst(isConst) {
 	_type=type;
     }
-    
 
   public:
 
