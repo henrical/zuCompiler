@@ -8,12 +8,12 @@ namespace zu {
    * Class for describing program nodes.
    * Nao estamos a usar isto. Remover?
    */
-  class return_node: public cdk::expression_node {
+  class return_node: public cdk::basic_node {
     
 
   public:
     inline return_node(int lineno)
-    :cdk::expression_node(lineno)
+    :cdk::basic_node(lineno)
     {
     };
         

@@ -10,18 +10,13 @@ namespace zu {
    * Class for describing read nodes.
    */
   class break_node: public cdk::basic_node {
-    int *_level;
 
   public:
-    inline break_node(int lineno, int *level) :
-        cdk::basic_node(lineno), _level(level) {
+    inline break_node(int lineno) :
+        cdk::basic_node(lineno) {
     }
 
   public:
-    inline int *level() {
-      return _level;
-    }
-
     void accept(basic_ast_visitor *sp, int level) {
       sp->do_break_node(this, level);
     }

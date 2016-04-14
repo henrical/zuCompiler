@@ -28,20 +28,19 @@
 %token <i> tLINTEGER 
 %token <s> tIDENTIFIER tLSTRING  
 %token <d> tLDOUBLE
-%token tWHILE tIF tPRINT tREAD tBEGIN tEND tSTRING tDOUBLE tINTEGER tGT tLT tIDENTIFIER
-
-%nonassoc tIFX
-%nonassoc tELSE
+%token tWHILE tIF tPRINT tREAD tBEGIN tEND tSTRING tDOUBLE  tIDENTIFIER tCONTINUE tBREAK tRETURN tNLPRINT
 
 %right '='
-%left tGE tLE tEQ tNE tGT tLT
+%left tGE tLE tEQ tNE 
 %left '+' '-'
 %left '&' '|'
 %left '*' '/' '%'
 %nonassoc tUNARY
+%left tLEFT_PREC
+%right tRIGHT_PREC
 
-%type <node> stmt assign_variable
-%type <sequence> list arguments expr_arguments
+%type <node> stmt assign_variable block instruction cond_instruction
+%type <sequence> list arguments expr_arguments instructions
 %type <expression> expr literal variable_expr func_call
 %type <lvalue> lval declare_variable
 %type <type> type
@@ -62,13 +61,44 @@ list : stmt	                        { $$ = new cdk::sequence_node(LINE, $1); }
 
 stmt : assign_variable ';'              { $$ = $1;}
      | function                         { $$ = $1;}
+     | function block                   { $$ = new zu::function_definition_node(LINE, $1, $2);} 
      ;
+  
+/*stmts : stmt                           { $$ = new cdk::sequence_node(LINE, $1); }
+      | stmts stmt                      { $$ = new cdk::sequence_node(LINE, $2, $1); }  
+      ;*/
+
+block : '{' list '}'                    { $$ = new zu::block_node(LINE, $2, NULL); }                       
+      | '{' instructions'}'             { $$ = new zu::block_node(LINE, NULL, $2); } 
+      | '{' '}'                         { $$ = new zu::block_node(LINE, NULL, NULL); }
+      | '{' list instructions '}'       { $$ = new zu::block_node(LINE, $2, $3); }
+      ;
+      
+instructions: instruction               { $$ = new cdk::sequence_node(LINE, $1); }
+            | instructions instruction  { $$ = new cdk::sequence_node(LINE, $2, $1); }
+            ;
+
+instruction : expr ';'                  { $$ = new zu::evaluation_node(LINE, $1);}
+            | expr '!'                  {/*impressao sem newline*/$$ = new zu::print_node(LINE, $1, false);}
+            | expr tNLPRINT             {/*impressao com newline*/ $$ = new zu::print_node(LINE, $1, true);}
+            | tBREAK                    { $$ = new zu::break_node(LINE);}
+            | tCONTINUE                 { $$ = new zu::continue_node(LINE);}
+            | tRETURN                   { $$ = new zu::return_node(LINE);}
+            | cond_instruction          { $$ = $1;}
+/* falta aqui loops */
+            | block                     { $$ = $1;}
+            ;
+            
+cond_instruction : expr '#' instruction                 { $$ = new zu::if_else_node(LINE, $1, $3, NULL);}
+                 | expr '?' instruction                 { $$ = new zu::if_else_node(LINE, $1, $3, NULL);}
+                 | expr '?' instruction ':' instruction { $$ = new zu::if_else_node(LINE, $1, $3, $5); }
+                 ;
+   
    
 /* id_func!() -> funçao global 
    id_func?() -> funcao definida noutro modulo
    
    !id_func() -> retorna void
-   falta aqui funçao() = literal
 */
 function : type tIDENTIFIER  '(' arguments ')'                 {$$ = new zu::function_declaration_node(LINE, $1, NULL, true, false, $4 ); }
          | type tIDENTIFIER  '(' arguments ')' '=' literal     {$$ = new zu::function_declaration_node(LINE, $1, $7, true, false, $4 ); }
@@ -95,11 +125,13 @@ assign_variable : declare_variable                      { $$ = $1; }
                 | declare_variable '=' expr             { $$ = new zu::assignment_node(LINE, $1, $3 ); }
                 ;
                 
-/* tipos primitivos */
-type : tINTEGER                                         { $$ = new basic_type(4, basic_type::TYPE_INT); }
+/* tipos primitivos
+   tipo void? "!" */
+type : '#'                                              { $$ = new basic_type(4, basic_type::TYPE_INT); }
      | tDOUBLE                                          { $$ = new basic_type(8, basic_type::TYPE_DOUBLE); }
      | tSTRING                                          { $$ = new basic_type(4, basic_type::TYPE_STRING); }
      | '<' type '>'                                     { $$ = new basic_type(4, basic_type::TYPE_POINTER); }
+     | '!'                                              { $$ = new basic_type(1, basic_type::TYPE_VOID); }
      ;
      
 literal : tLINTEGER                                     { $$ = new cdk::integer_node(LINE, $1); }
@@ -127,13 +159,14 @@ expr : literal                         { $$ = $1;}
      | expr '*' expr	               { $$ = new cdk::mul_node(LINE, $1, $3); }
      | expr '/' expr	               { $$ = new cdk::div_node(LINE, $1, $3); }
      | expr '%' expr	               { $$ = new cdk::mod_node(LINE, $1, $3); } /* '%' e apenas para inteiros */
-     | expr tLT expr	               { $$ = new cdk::lt_node(LINE, $1, $3); }
-     | expr tGT expr	               { $$ = new cdk::gt_node(LINE, $1, $3); }
+     | expr '<' expr %prec tLEFT_PREC  { $$ = new cdk::lt_node(LINE, $1, $3); }
+     | expr '>' expr %prec tLEFT_PREC  { $$ = new cdk::gt_node(LINE, $1, $3); }
      | expr tGE expr	               { $$ = new cdk::ge_node(LINE, $1, $3); }
      | expr tLE expr                   { $$ = new cdk::le_node(LINE, $1, $3); }
      | expr tNE expr	               { $$ = new cdk::ne_node(LINE, $1, $3); }
      | expr tEQ expr	               { $$ = new cdk::eq_node(LINE, $1, $3); }
      
+     | variable_expr                   { $$ = $1;}
      | '(' expr ')'                    { $$ = $2; }
      | lval '=' expr                   { $$ = new zu::assignment_node(LINE, $1, $3); }
      ;
@@ -144,7 +177,7 @@ expr_arguments : expr                           { $$ = new cdk::sequence_node(LI
                ;
      
 variable_expr : lval                            { $$ = new zu::rvalue_node(LINE, $1); }      
-              | func_call  
+              | func_call                       /*FIXME:*/
               ;
      
 func_call : tIDENTIFIER '(' expr_arguments ')'  { $$ = new zu::function_call_node(LINE, $1, $3);}

@@ -103,27 +103,36 @@ COMMENT                     \/\*((\*+[^/*])|([^*]))*\**\*\/
 %x X_STRING X_STRING_SPECIAL X_EOF_STRING
 %%
 
-{LINE_COMMENT}                                  ; print("skipping line comment", yylineno);
-{COMMENT}                                       ; print("skipping multi-line comment", yylineno);
+{LINE_COMMENT}                                  ; /*print("skipping line comment", yylineno);*/
+{COMMENT}                                       ; /*print("skipping multi-line comment", yylineno);*/
 
-">="                                            printLexeme("greater|equal than", yytext, yylineno);return tGE; 
-"<="                                            printLexeme("less|equal than", yytext, yylineno);return tLE; 
-"<"                                             printLexeme("less than", yytext, yylineno);return tLT; /*FIXME: esta regra entra em conflito com declaraçao de ponteiros*/
-">"                                             printLexeme("greater than", yytext, yylineno);return tGT; 
-"=="                                            printLexeme("equal to", yytext, yylineno);return tEQ; 
-"!="                                            printLexeme("different than", yytext, yylineno);return tNE; 
+"!!"                                            return tNLPRINT;
+"!!!"                                           return tRETURN;
 
-"#"                                             printLexeme("integer", "#", yylineno); return tINTEGER; 
-"$"                                             printLexeme("string", "$", yylineno); return tSTRING; 
-"%"                                             printLexeme("float", "%", yylineno);  return tDOUBLE; 
+"<>"                                            /*printLexeme("break", yytext, yylineno);*/return tBREAK;
+"><"                                            /*printLexeme("continue", yytext, yylineno);*/return tCONTINUE;
 
-[A-Za-z][A-Za-z0-9_]*                           yylval.s = new std::string(yytext); printLexeme("identifier", *yylval.s, yylineno); return tIDENTIFIER;
+">="                                           /* printLexeme("greater|equal than", yytext, yylineno);*/return tGE; 
+"<="                                            /*printLexeme("less|equal than", yytext, yylineno);*/return tLE; 
+
+
+"=="                                            /*printLexeme("equal to", yytext, yylineno);*/return tEQ; 
+"!="                                            /*printLexeme("different than", yytext, yylineno);*/return tNE; 
+
+"#"                                             return *yytext;; 
+"$"                                             /*printLexeme("string", "$", yylineno);*/ return tSTRING; 
+"%"                                             /*printLexeme("float", "%", yylineno);*/  return tDOUBLE; 
+
+"<"                                             return *yytext;  
+">"                                             return *yytext; 
+
+[A-Za-z][A-Za-z0-9_]*                           yylval.s = new std::string(yytext); /*printLexeme("identifier", *yylval.s, yylineno);*/ return tIDENTIFIER;
 
 
 {STRING_LIM}                                        yy_push_state(X_STRING); yylval.s = new std::string("");
 <X_STRING>{STRING_LIM}{OPT_WHITESPACE}{STRING_LIM}      ;
 <X_STRING>{STRING_LIM}{OPT_WHITESPACE}{COMMENT}{OPT_WHITESPACE}{STRING_LIM}   ;/* esta regra serve para ignorar comentarios entre strings */  
-<X_STRING>{STRING_LIM}                              yy_pop_state(); printLexeme("l_string", *yylval.s, yylineno); return tLSTRING;
+<X_STRING>{STRING_LIM}                              yy_pop_state(); /*printLexeme("l_string", *yylval.s, yylineno);*/ return tLSTRING;
 
 <X_STRING>{BACKSLASH}0                              yy_push_state(X_EOF_STRING); /* encontrar '\0' faz ignorar o resto da string */
 
@@ -146,11 +155,11 @@ COMMENT                     \/\*((\*+[^/*])|([^*]))*\**\*\/
 <X_STRING_SPECIAL>{HEXNUM}                      yy_pop_state(); *yylval.s += std::string(1, hex2dec(yytext));
 
 
-[0-9]+[.][0-9]+                                 yylval.d = std::stod(yytext, nullptr); printLexeme("l_double", yylval.d, yylineno);  return tLDOUBLE;
+[0-9]+[.][0-9]+                                 yylval.d = std::stod(yytext, nullptr); /*printLexeme("l_double", yylval.d, yylineno);*/  return tLDOUBLE;
 
-[0-9]+                                          yylval.i = strtol(yytext, nullptr, 10); printLexeme("l_integer", yylval.i, yylineno); return tLINTEGER;
+[0-9]+                                          yylval.i = strtol(yytext, nullptr, 10); /*printLexeme("l_integer", yylval.i, yylineno);*/ return tLINTEGER;
 
-[-+?!*()=;,]                                      return *yytext;
+[-+?!*()=;,{}]                                  return *yytext;
 
 {WHITESPACE}                                    ; /* ignore whitespace */
 
