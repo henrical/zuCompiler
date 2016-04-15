@@ -1,5 +1,5 @@
 %{
-// $Id: zu_parser.y,v 1.7 2016/04/13 13:38:37 ist175838 Exp $
+// $Id: zu_parser.y,v 1.8 2016/04/14 17:17:19 ist175838 Exp $
 //-- don't change *any* of these: if you do, you'll break the compiler.
 #include <cdk/compiler.h>
 #include "ast/all.h"
@@ -21,6 +21,7 @@
   basic_type                        *type;
   zu::lvalue_node                   *lvalue;
   zu::function_declaration_node     *funcdecl;
+  cdk::string_node                  *string;
 };
 
 /* tLSTRING: string literal. 
@@ -45,6 +46,7 @@
 %type <lvalue> lval declare_variable
 %type <type> type
 %type <funcdecl> function
+%type <string> string_literal
 
 %{
 //-- The rules below will be included in yyparse, the main parsing function.
@@ -135,9 +137,13 @@ type : '#'                                              { $$ = new basic_type(4,
      ;
      
 literal : tLINTEGER                                     { $$ = new cdk::integer_node(LINE, $1); }
-        | tLSTRING                                      { $$ = new cdk::string_node(LINE, $1); }
+        | string_literal                                { $$ = $1;/* std::cout << $1->value() << std::endl;*/ }
         | tLDOUBLE                                      { $$ = new cdk::double_node(LINE, $1); }
         ;
+        
+string_literal : tLSTRING                               { $$ = new cdk::string_node(LINE, $1); }
+               | string_literal tLSTRING                { $$ = new cdk::string_node(LINE, $1->value() + $2->c_str()); }
+               ;
 /*Falta:
     indexaçao?
     

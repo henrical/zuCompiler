@@ -1,7 +1,7 @@
 %option c++ yyclass="zu_scanner" outfile="zu_scanner.cpp"
 %option stack noyywrap yylineno 8bit
 %{ 
-/* $Id: zu_scanner.l,v 1.6 2016/04/12 19:47:25 ist175838 Exp $ */
+/* $Id: zu_scanner.l,v 1.7 2016/04/14 17:17:19 ist175838 Exp $ */
 // make relevant includes before including the parser's tab file
 #include <string>
 #include "math.h"
@@ -130,8 +130,6 @@ COMMENT                     \/\*((\*+[^/*])|([^*]))*\**\*\/
 
 
 {STRING_LIM}                                        yy_push_state(X_STRING); yylval.s = new std::string("");
-<X_STRING>{STRING_LIM}{OPT_WHITESPACE}{STRING_LIM}      ;
-<X_STRING>{STRING_LIM}{OPT_WHITESPACE}{COMMENT}{OPT_WHITESPACE}{STRING_LIM}   ;/* esta regra serve para ignorar comentarios entre strings */  
 <X_STRING>{STRING_LIM}                              yy_pop_state(); /*printLexeme("l_string", *yylval.s, yylineno);*/ return tLSTRING;
 
 <X_STRING>{BACKSLASH}0                              yy_push_state(X_EOF_STRING); /* encontrar '\0' faz ignorar o resto da string */
