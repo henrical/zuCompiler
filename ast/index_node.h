@@ -12,17 +12,17 @@ namespace zu {
     cdk::expression_node * _offset;
 
   public:
-    inline index_node(int lineno, std::string &value, cdk::expression_node * base_pos, cdk::expression_node * rval  ) :
-        zu::lvalue_node(lineno,value), _position(base_pos), _offset(rval) {
+    inline index_node(int lineno, cdk::expression_node * base_pos, cdk::expression_node * rval  ) :
+        zu::lvalue_node(lineno), _position(base_pos), _offset(rval) {
     }
     
-    inline index_node(int lineno, std::string *value, cdk::expression_node * base_pos, cdk::expression_node * rval  ) :
-        zu::lvalue_node(lineno,*value), _position(base_pos), _offset(rval) {
-    }
-    
-    inline index_node(int lineno, const char *value, cdk::expression_node * base_pos, cdk::expression_node * rval  ) :
-        zu::lvalue_node(lineno,value), _position(base_pos), _offset(rval) {
-    }
+//     inline index_node(int lineno, std::string *value, cdk::expression_node * base_pos, cdk::expression_node * rval  ) :
+//         zu::lvalue_node(lineno,*value), _position(base_pos), _offset(rval) {
+//     }
+//     
+//     inline index_node(int lineno, const char *value, cdk::expression_node * base_pos, cdk::expression_node * rval  ) :
+//         zu::lvalue_node(lineno,value), _position(base_pos), _offset(rval) {
+//     }
 
   public:
     inline cdk::expression_node *position() {

@@ -1,4 +1,4 @@
-// $Id: declare_var_node.h,v 1.4 2016/04/13 13:38:37 ist175838 Exp $ -*- c++ -*-
+// $Id: declare_var_node.h,v 1.5 2016/04/15 15:44:27 ist175838 Exp $ -*- c++ -*-
 #ifndef __ZU_DECLAREVARNODE_H__
 #define __ZU_DECLAREVARDNODE_H__
 
@@ -13,12 +13,11 @@ class declare_var_node: public zu::variable_node  {
    bool _local;
    bool _import;
    bool _func_arg;
-   bool _isConst;
 
   public:
-    inline declare_var_node(int lineno, basic_type * type, std::string * identifier, bool local, bool import, bool func_arg, bool isConst) :
+    inline declare_var_node(int lineno, basic_type * type, std::string * identifier, bool local, bool import, bool func_arg) :
       zu::variable_node(lineno,identifier)
-        ,_local(local),_import(import),_func_arg(func_arg),_isConst(isConst) {
+        ,_local(local),_import(import),_func_arg(func_arg) {
 	_type=type;
     }
 
@@ -32,10 +31,6 @@ class declare_var_node: public zu::variable_node  {
     }
     inline bool isFuncArg(){
       return _func_arg;
-    }
-    
-    inline bool isConst(){
-      return _isConst;
     }
 
     void accept(basic_ast_visitor *sp, int level) {

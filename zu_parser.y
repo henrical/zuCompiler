@@ -1,5 +1,5 @@
 %{
-// $Id: zu_parser.y,v 1.8 2016/04/14 17:17:19 ist175838 Exp $
+// $Id: zu_parser.y,v 1.10 2016/04/15 15:44:27 ist175838 Exp $
 //-- don't change *any* of these: if you do, you'll break the compiler.
 #include <cdk/compiler.h>
 #include "ast/all.h"
@@ -41,11 +41,11 @@
 %right tRIGHT_PREC
 
 %type <node> stmt assign_variable block instruction cond_instruction
-%type <sequence> list arguments expr_arguments instructions
+%type <sequence> list arguments exprs instructions
 %type <expression> expr literal variable_expr func_call
 %type <lvalue> lval declare_variable
 %type <type> type
-%type <funcdecl> function
+%type <funcdecl> declare_function
 %type <string> string_literal
 
 %{
@@ -62,13 +62,9 @@ list : stmt	                        { $$ = new cdk::sequence_node(LINE, $1); }
      ;
 
 stmt : assign_variable ';'              { $$ = $1;}
-     | function                         { $$ = $1;}
-     | function block                   { $$ = new zu::function_definition_node(LINE, $1, $2);} 
+     | declare_function                 { $$ = $1;}
+     | declare_function block           { $$ = new zu::function_definition_node(LINE, $1, $2);} 
      ;
-  
-/*stmts : stmt                           { $$ = new cdk::sequence_node(LINE, $1); }
-      | stmts stmt                      { $$ = new cdk::sequence_node(LINE, $2, $1); }  
-      ;*/
 
 block : '{' list '}'                    { $$ = new zu::block_node(LINE, $2, NULL); }                       
       | '{' instructions'}'             { $$ = new zu::block_node(LINE, NULL, $2); } 
@@ -87,7 +83,7 @@ instruction : expr ';'                  { $$ = new zu::evaluation_node(LINE, $1)
             | tCONTINUE                 { $$ = new zu::continue_node(LINE);}
             | tRETURN                   { $$ = new zu::return_node(LINE);}
             | cond_instruction          { $$ = $1;}
-/* falta aqui loops */
+/*            | loop_instruction          { $$ = $1;}*/
             | block                     { $$ = $1;}
             ;
             
@@ -96,13 +92,22 @@ cond_instruction : expr '#' instruction                 { $$ = new zu::if_else_n
                  | expr '?' instruction ':' instruction { $$ = new zu::if_else_node(LINE, $1, $3, $5); }
                  ;
    
-   
+/*loop_instruction : '[' exprs ';'       ';'       ']' instruction  
+                 | '['       ';' exprs ';'       ']' instruction   
+                 | '['       ';'       ';' exprs ']' instruction
+                 | '[' exprs ';' exprs ';'       ']' instruction
+                 | '['       ';' exprs ';' exprs ']' instruction
+                 | '[' exprs ';'       ';' exprs ']' instruction
+                 | '[' exprs ';' exprs ';' exprs ']' instruction 
+                 | '['       ';'       ';'       ']' instruction
+                 ; */
+
 /* id_func!() -> funçao global 
    id_func?() -> funcao definida noutro modulo
    
    !id_func() -> retorna void
 */
-function : type tIDENTIFIER  '(' arguments ')'                 {$$ = new zu::function_declaration_node(LINE, $1, NULL, true, false, $4 ); }
+declare_function : type tIDENTIFIER  '(' arguments ')'                 {$$ = new zu::function_declaration_node(LINE, $1, NULL, true, false, $4 ); }
          | type tIDENTIFIER  '(' arguments ')' '=' literal     {$$ = new zu::function_declaration_node(LINE, $1, $7, true, false, $4 ); }
          | type tIDENTIFIER '!' '(' arguments ')'              {$$ = new zu::function_declaration_node(LINE, $1, NULL, false, false, $5);}
          | type tIDENTIFIER '!' '(' arguments ')' '=' literal  {$$ = new zu::function_declaration_node(LINE, $1, $8, false, false, $5);}
@@ -118,9 +123,9 @@ arguments: assign_variable                                     {$$ = new cdk::se
          ;
 
 
-declare_variable : type tIDENTIFIER                     { $$ = new zu::declare_var_node(LINE,$1, $2, true, false, false, false);}
-                 | type tIDENTIFIER '!'                 { $$ = new zu::declare_var_node(LINE,$1, $2, false, false, false, false);}             
-                 | type tIDENTIFIER '?'                 { $$ = new zu::declare_var_node(LINE,$1, $2, true, true, false, false);}
+declare_variable : type tIDENTIFIER                     { $$ = new zu::declare_var_node(LINE,$1, $2, true, false, false);}
+                 | type tIDENTIFIER '!'                 { $$ = new zu::declare_var_node(LINE,$1, $2, false, false, false);}             
+                 | type tIDENTIFIER '?'                 { $$ = new zu::declare_var_node(LINE,$1, $2, true, true, false);}
                  ; 
       
 assign_variable : declare_variable                      { $$ = $1; }
@@ -137,13 +142,14 @@ type : '#'                                              { $$ = new basic_type(4,
      ;
      
 literal : tLINTEGER                                     { $$ = new cdk::integer_node(LINE, $1); }
-        | string_literal                                { $$ = $1;/* std::cout << $1->value() << std::endl;*/ }
-        | tLDOUBLE                                      { $$ = new cdk::double_node(LINE, $1); }
+        | string_literal                                { $$ = $1; std::cout << "New string read: " << $1->value() << std::endl; }
+        | tLDOUBLE                                      { $$ = new cdk::double_node(LINE, $1); std::cout << "New double literal read: " << $1 << std::endl; }
         ;
         
 string_literal : tLSTRING                               { $$ = new cdk::string_node(LINE, $1); }
                | string_literal tLSTRING                { $$ = new cdk::string_node(LINE, $1->value() + $2->c_str()); }
                ;
+
 /*Falta:
     indexaçao?
     
@@ -177,20 +183,20 @@ expr : literal                         { $$ = $1;}
      | lval '=' expr                   { $$ = new zu::assignment_node(LINE, $1, $3); }
      ;
 
-expr_arguments : expr                           { $$ = new cdk::sequence_node(LINE, $1);}
-               | expr_arguments ',' expr        { $$ = new cdk::sequence_node(LINE, $3, $1); }
-               |                                { $$ = NULL;}
-               ;
+exprs : expr                           { $$ = new cdk::sequence_node(LINE, $1);}
+      | exprs ',' expr                 { $$ = new cdk::sequence_node(LINE, $3, $1); }
+      |                                { $$ = NULL;}
+      ;
      
 variable_expr : lval                            { $$ = new zu::rvalue_node(LINE, $1); }      
-              | func_call                       /*FIXME:*/
+              | func_call                       { $$ = $1;}
               ;
      
-func_call : tIDENTIFIER '(' expr_arguments ')'  { $$ = new zu::function_call_node(LINE, $1, $3);}
+func_call : tIDENTIFIER '(' exprs ')'  { $$ = new zu::function_call_node(LINE, $1, $3);}
           ;
      
 lval : tIDENTIFIER                              { $$ = new zu::lvalue_node(LINE, $1); }
-     | expr '[' expr ']'                        { $$ = new zu::index_node(LINE, "???", $1, $3); /* o que por no 2º parametro? */}
+     | expr '[' expr ']'                        { $$ = new zu::index_node(LINE, $1, $3); /* o que por no 2º parametro? */}
      ;
      
 

@@ -1,7 +1,7 @@
 %option c++ yyclass="zu_scanner" outfile="zu_scanner.cpp"
 %option stack noyywrap yylineno 8bit
 %{ 
-/* $Id: zu_scanner.l,v 1.7 2016/04/14 17:17:19 ist175838 Exp $ */
+/* $Id: zu_scanner.l,v 1.10 2016/04/15 15:44:27 ist175838 Exp $ */
 // make relevant includes before including the parser's tab file
 #include <string>
 #include "math.h"
@@ -56,7 +56,7 @@ void printLexeme(std::string token, std::string lexeme, int lineno)
 int hex2dec(std::string hex)
 {
     int result = 0;
-    for (int i=0; i<hex.length(); i++) {
+    for (unsigned int i=0; i<hex.length(); i++) {
         if (hex[i]>=48 && hex[i]<=57)
         {
             result += (hex[i]-48)*pow(16,hex.length()-i-1);
@@ -91,8 +91,11 @@ BACKSLASH                   \\
 /* Quando aparece numa string, a string termina nesse ponto.  */
 ASCII_NULL                  \\0
 
-LINE_COMMENT                \/\/.*
-COMMENT                     \/\*((\*+[^/*])|([^*]))*\**\*\/
+HEXADECIMAL_INTEGER         0x[0-9a-fA-F]+
+DECIMAL_INTEGER             [0-9]|[1-9][0-9]+
+FLOAT                       [0-9]*\.[0-9]+
+FLOAT_SCI_NOTATION_1        [1-9]+([Ee][-+]?[0-9]+)
+FLOAT_SCI_NOTATION_2        [0-9]*\.[0-9]+([Ee][-+]?[0-9]+)
 
 /* ========================================== */
 
@@ -100,11 +103,19 @@ COMMENT                     \/\*((\*+[^/*])|([^*]))*\**\*\/
    X_EOF_STRING: estado para quando estamos numa string e encontramos '\0'. Dai ate ao final da string ignora-se os caracteres.
    X_STRING_SPECIAL: estado para quando estamos numa string e encontramos '\', que e o inicio de um caracter especial.
 */
-%x X_STRING X_STRING_SPECIAL X_EOF_STRING
+%x X_STRING X_STRING_SPECIAL X_EOF_STRING X_LINE_COMMENT X_MLINE_COMMENT
 %%
 
-{LINE_COMMENT}                                  ; /*print("skipping line comment", yylineno);*/
-{COMMENT}                                       ; /*print("skipping multi-line comment", yylineno);*/
+
+
+\/\/                                            yy_push_state(X_LINE_COMMENT);
+\/\*                                            yy_push_state(X_MLINE_COMMENT);
+
+<X_LINE_COMMENT>.                               ;
+<X_LINE_COMMENT>\n                              yy_pop_state();
+
+<X_MLINE_COMMENT>.|\n                           ;
+<X_MLINE_COMMENT>\*\/                           yy_pop_state();
 
 "!!"                                            return tNLPRINT;
 "!!!"                                           return tRETURN;
@@ -119,7 +130,7 @@ COMMENT                     \/\*((\*+[^/*])|([^*]))*\**\*\/
 "=="                                            /*printLexeme("equal to", yytext, yylineno);*/return tEQ; 
 "!="                                            /*printLexeme("different than", yytext, yylineno);*/return tNE; 
 
-"#"                                             return *yytext;; 
+"#"                                             return *yytext;
 "$"                                             /*printLexeme("string", "$", yylineno);*/ return tSTRING; 
 "%"                                             /*printLexeme("float", "%", yylineno);*/  return tDOUBLE; 
 
@@ -153,9 +164,33 @@ COMMENT                     \/\*((\*+[^/*])|([^*]))*\**\*\/
 <X_STRING_SPECIAL>{HEXNUM}                      yy_pop_state(); *yylval.s += std::string(1, hex2dec(yytext));
 
 
-[0-9]+[.][0-9]+                                 yylval.d = std::stod(yytext, nullptr); /*printLexeme("l_double", yylval.d, yylineno);*/  return tLDOUBLE;
+{HEXADECIMAL_INTEGER}		                { 
+                                                    yylval.i = strtol(yytext,nullptr,16);
+                                                    if(yylval.i >= 0){
+                                                        /*printLexeme("l_integer", yylval.i, yylineno);*/
+                                                        return tLINTEGER;
+                                                    }
+                                                    else
+                                                    { 
+                                                        yyerror("Lexical error: stack overflow on hexadecimal integer");
+                                                    }
+                                                }
+                                                
+{FLOAT_SCI_NOTATION_2}                          yylval.d = std::stod(yytext, nullptr); return tLDOUBLE;
+{FLOAT_SCI_NOTATION_1}                          yylval.d = std::stod(yytext, nullptr); return tLDOUBLE;
+{FLOAT}                                         yylval.d = std::stod(yytext, nullptr); return tLDOUBLE;
 
-[0-9]+                                          yylval.i = strtol(yytext, nullptr, 10); /*printLexeme("l_integer", yylval.i, yylineno);*/ return tLINTEGER;
+{DECIMAL_INTEGER}                               {
+                                                    yylval.i = strtoul(yytext, nullptr, 10);
+                                                    if(yylval.i >= 0){
+                                                        /*printLexeme("l_integer", yylval.i, yylineno);*/
+                                                        return tLINTEGER;
+                                                    }
+                                                    else{
+                                                        yyerror("Lexical error: stack overflow on integer value");
+                                                    }
+                                                }
+
 
 [-+?!*()=;,{}]                                  return *yytext;
 

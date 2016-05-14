@@ -1,4 +1,4 @@
-// $Id: xml_writer.cpp,v 1.14 2016/04/06 16:20:27 ist175838 Exp $ -*- c++ -*-
+// $Id: xml_writer.cpp,v 1.15 2016/04/15 15:44:27 ist175838 Exp $ -*- c++ -*-
 #include <string>
 #include "targets/xml_writer.h"
 #include "targets/type_checker.h"
@@ -160,7 +160,10 @@ void zu::xml_writer::do_continue_node(zu::continue_node * const node, int lvl) {
 
 void zu::xml_writer::do_block_node(zu::block_node * const node, int lvl)
 {
-    //FIXME
+  openTag("block", lvl );
+//   if(node->stmts()!= NULL){node->stmts()->accept(this, lvl + 2);}
+//   if(node->instrs()!= NULL){node->instrs()->accept(this,lvl + 2);}
+//   closeTag("block", lvl );
 }
 
 //------------------------------------------------------------------------------
@@ -172,7 +175,8 @@ void zu::xml_writer::do_break_node(zu::break_node * const node, int lvl) {
 //------------------------------------------------------------------------------
     
 void zu::xml_writer::do_return_node(zu::return_node * const node, int lvl) {
-    //FIXME
+  openTag(node, lvl);
+  closeTag(node, lvl);
 }
 
 //------------------------------------------------------------------------------
@@ -184,25 +188,33 @@ void zu::xml_writer::do_identifier_node(zu::identifier_node * const node, int lv
 //------------------------------------------------------------------------------
 
 void zu::xml_writer::do_index_node(zu::index_node * const node, int lvl) {
-    //FIXME
+  openTag(node, lvl);
+  
+  openTag("lvalue_node",lvl+2);
+  node->position()->accept(this, lvl + 4 );
+  closeTag("lvalue_node",lvl+2);
+  openTag("index",lvl+2);
+  node->offset()->accept(this, lvl + 4);
+  closeTag("index",lvl+2);
+  closeTag(node, lvl);
 }
 
 //------------------------------------------------------------------------------
 
 void zu::xml_writer::do_and_node(zu::and_node * const node, int lvl) {
-    //FIXME
+  processBinaryExpression(node,lvl);
 }
 
 //------------------------------------------------------------------------------
 
 void zu::xml_writer::do_or_node(zu::or_node * const node, int lvl) {
-    //FIXME
+  processBinaryExpression(node,lvl);
 }
 
 //------------------------------------------------------------------------------
 
 void zu::xml_writer::do_identity_node(zu::identity_node * const node, int lvl) {
-    //FIXME
+  processUnaryExpression(node, lvl); 
 }
 
 //------------------------------------------------------------------------------
