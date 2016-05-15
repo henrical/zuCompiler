@@ -47,7 +47,6 @@
 %nonassoc tUNARY 
 /* %nonassoc tEXPR */
 %nonassoc tLINTEGER tLSTRING tLDOUBLE
-/* %left  */
 %nonassoc ','
 %nonassoc '!' '?'
 %nonassoc ':'
