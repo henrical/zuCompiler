@@ -393,7 +393,7 @@ static yyconst flex_int32_t yy_ec[256] =
        17,   18,    9,    1,   19,   19,   19,   19,   20,   19,
        21,   21,   21,   21,   21,   21,   21,   21,   21,   21,
        21,   21,   21,   21,   21,   21,   21,   21,   21,   21,
-        1,   22,    1,    1,   23,    1,   19,   19,   19,   19,
+        9,   22,    9,    1,   23,    1,   19,   19,   19,   19,
 
        20,   19,   21,   21,   21,   21,   21,   21,   21,   24,
        21,   21,   21,   25,   21,   26,   21,   21,   21,   27,
@@ -507,7 +507,7 @@ static yyconst flex_int32_t yy_rule_can_match_eol[45] =
 #define YY_RESTORE_YY_MORE_OFFSET
 #line 1 "zu_scanner.l"
 #line 4 "zu_scanner.l"
-/* $Id: zu_scanner.l,v 1.10 2016/04/15 15:44:27 ist175838 Exp $ */
+/* $Id: zu_scanner.l,v 1.11 2016/05/14 22:50:04 ist175838 Exp $ */
 // make relevant includes before including the parser's tab file
 #include <string>
 #include "math.h"
@@ -881,7 +881,7 @@ YY_RULE_SETUP
 case 17:
 YY_RULE_SETUP
 #line 135 "zu_scanner.l"
-/*printLexeme("float", "%", yylineno);*/  return tDOUBLE; 
+/*printLexeme("float", "%", yylineno);*/  return tDOUBLE; //FIXME: '%' pode ser um operador.
 	YY_BREAK
 case 18:
 YY_RULE_SETUP

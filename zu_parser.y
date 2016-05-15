@@ -1,5 +1,5 @@
 %{
-// $Id: zu_parser.y,v 1.10 2016/04/15 15:44:27 ist175838 Exp $
+// $Id: zu_parser.y,v 1.11 2016/05/14 22:50:04 ist175838 Exp $
 //-- don't change *any* of these: if you do, you'll break the compiler.
 #include <cdk/compiler.h>
 #include "ast/all.h"
@@ -36,7 +36,18 @@
 %left '+' '-'
 %left '&' '|'
 %left '*' '/' '%'
-%nonassoc tUNARY
+%left '<' '>'
+/* %left ' */
+%nonassoc '[' ']'
+%nonassoc '{' '}'
+/*%nonassoc '#' tDOUBLE tSTRING*/
+/* %nonassoc tIDENTIFIER */
+/* %nonassoc tEMPTY */
+%nonassoc tUNARY 
+/* %nonassoc tEXPR */
+%nonassoc tLINTEGER tLSTRING tLDOUBLE
+%nonassoc ','
+%nonassoc '!' '?'
 %left tLEFT_PREC
 %right tRIGHT_PREC
 
@@ -123,9 +134,12 @@ arguments: assign_variable                                     {$$ = new cdk::se
          ;
 
 
-declare_variable : type tIDENTIFIER                     { $$ = new zu::declare_var_node(LINE,$1, $2, true, false, false);}
-                 | type tIDENTIFIER '!'                 { $$ = new zu::declare_var_node(LINE,$1, $2, false, false, false);}             
-                 | type tIDENTIFIER '?'                 { $$ = new zu::declare_var_node(LINE,$1, $2, true, true, false);}
+declare_variable : type tIDENTIFIER                     { std::cout << "Read clean var decl." << std::endl;
+                                                          $$ = new zu::declare_var_node(LINE,$1, $2, true, false, false);}
+                 | type tIDENTIFIER '!'                 { std::cout << "Read public var decl." << std::endl;
+                                                          $$ = new zu::declare_var_node(LINE,$1, $2, false, false, false);}             
+                 | type tIDENTIFIER '?'                 { std::cout << "Read extern var decl." << std::endl;
+                                                          $$ = new zu::declare_var_node(LINE,$1, $2, true, true, false);}
                  ; 
       
 assign_variable : declare_variable                      { $$ = $1; }
@@ -171,8 +185,8 @@ expr : literal                         { $$ = $1;}
      | expr '*' expr	               { $$ = new cdk::mul_node(LINE, $1, $3); }
      | expr '/' expr	               { $$ = new cdk::div_node(LINE, $1, $3); }
      | expr '%' expr	               { $$ = new cdk::mod_node(LINE, $1, $3); } /* '%' e apenas para inteiros */
-     | expr '<' expr %prec tLEFT_PREC  { $$ = new cdk::lt_node(LINE, $1, $3); }
-     | expr '>' expr %prec tLEFT_PREC  { $$ = new cdk::gt_node(LINE, $1, $3); }
+     | expr '<' expr                   { $$ = new cdk::lt_node(LINE, $1, $3); }
+     | expr '>' expr                   { $$ = new cdk::gt_node(LINE, $1, $3); }
      | expr tGE expr	               { $$ = new cdk::ge_node(LINE, $1, $3); }
      | expr tLE expr                   { $$ = new cdk::le_node(LINE, $1, $3); }
      | expr tNE expr	               { $$ = new cdk::ne_node(LINE, $1, $3); }
@@ -188,15 +202,15 @@ exprs : expr                           { $$ = new cdk::sequence_node(LINE, $1);}
       |                                { $$ = NULL;}
       ;
      
-variable_expr : lval                            { $$ = new zu::rvalue_node(LINE, $1); }      
-              | func_call                       { $$ = $1;}
+variable_expr : lval                   { $$ = new zu::rvalue_node(LINE, $1); }      
+              | func_call              { $$ = $1;}
               ;
      
 func_call : tIDENTIFIER '(' exprs ')'  { $$ = new zu::function_call_node(LINE, $1, $3);}
           ;
      
-lval : tIDENTIFIER                              { $$ = new zu::lvalue_node(LINE, $1); }
-     | expr '[' expr ']'                        { $$ = new zu::index_node(LINE, $1, $3); /* o que por no 2º parametro? */}
+lval : tIDENTIFIER                     { $$ = new zu::lvalue_node(LINE, $1); }
+     | expr '[' expr ']'               { $$ = new zu::index_node(LINE, $1, $3);} //CAUSING SEG FAULT
      ;
      
 

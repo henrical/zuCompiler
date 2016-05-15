@@ -1,7 +1,7 @@
 %option c++ yyclass="zu_scanner" outfile="zu_scanner.cpp"
 %option stack noyywrap yylineno 8bit
 %{ 
-/* $Id: zu_scanner.l,v 1.10 2016/04/15 15:44:27 ist175838 Exp $ */
+/* $Id: zu_scanner.l,v 1.11 2016/05/14 22:50:04 ist175838 Exp $ */
 // make relevant includes before including the parser's tab file
 #include <string>
 #include "math.h"
@@ -132,7 +132,7 @@ FLOAT_SCI_NOTATION_2        [0-9]*\.[0-9]+([Ee][-+]?[0-9]+)
 
 "#"                                             return *yytext;
 "$"                                             /*printLexeme("string", "$", yylineno);*/ return tSTRING; 
-"%"                                             /*printLexeme("float", "%", yylineno);*/  return tDOUBLE; 
+"%"                                             /*printLexeme("float", "%", yylineno);*/  return tDOUBLE; //FIXME: '%' pode ser um operador.
 
 "<"                                             return *yytext;  
 ">"                                             return *yytext; 
@@ -192,7 +192,7 @@ FLOAT_SCI_NOTATION_2        [0-9]*\.[0-9]+([Ee][-+]?[0-9]+)
                                                 }
 
 
-[-+?!*()=;,{}]                                  return *yytext;
+[-+?!*()=;,{}\[\]]                                  return *yytext;
 
 {WHITESPACE}                                    ; /* ignore whitespace */
 
