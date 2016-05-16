@@ -105,15 +105,15 @@ cond_instruction : expr '#' instruction                 { $$ = new zu::if_else_n
                  | expr '?' instruction ':' instruction { $$ = new zu::if_else_node(LINE, $1, $3, $5); }
                  ;
    
-/*loop_instruction : '[' exprs ';'       ';'       ']' instruction  
+loop_instruction : '[' exprs ';'       ';'       ']' instruction  
                  | '['       ';' exprs ';'       ']' instruction   
                  | '['       ';'       ';' exprs ']' instruction
-                 | '[' exprs ';' exprs ';'       ']' instruction
+/*                 | '[' exprs ';' exprs ';'       ']' instruction
                  | '['       ';' exprs ';' exprs ']' instruction
                  | '[' exprs ';'       ';' exprs ']' instruction
                  | '[' exprs ';' exprs ';' exprs ']' instruction 
-                 | '['       ';'       ';'       ']' instruction
-                 ; */
+                 | '['       ';'       ';'       ']' instruction*/
+                 ; 
 
 /* id_func!() -> funçao global 
    id_func?() -> funcao definida noutro modulo
