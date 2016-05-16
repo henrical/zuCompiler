@@ -24,8 +24,6 @@
   cdk::string_node                  *string;
 };
 
-/* tLSTRING: string literal. 
-*/
 %token <i> tLINTEGER 
 %token <s> tIDENTIFIER tLSTRING  
 %token <d> tLDOUBLE
@@ -45,13 +43,11 @@
 /* %nonassoc tIDENTIFIER */
 /* %nonassoc tEMPTY */
 %nonassoc tUNARY 
-%nonassoc tSECOND_LOWEST_ASSOC
 /* %nonassoc tEXPR */
 %nonassoc tLINTEGER tLSTRING tLDOUBLE
 %nonassoc ','
 %nonassoc '!' '?'
-%nonassoc ':' 
-%nonassoc ';'
+%nonassoc ':' ';'
 %nonassoc tHIGHEST_ASSOC
 %left tLEFT_PREC
 %right tRIGHT_PREC
@@ -82,16 +78,28 @@ stmt : assign_variable ';'                  { $$ = $1;}
      | declare_function block               { $$ = new zu::function_definition_node(LINE, $1, $2);} 
      ;
 
+
+/*  
+    Bloco.
+    Termina sempre com return ("!!!"), ver análise semantica.
+    A sequencia de declaraçoes (list) vem sempre antes da lista de instruçoes.
+*/     
 block : '{' list '}'                    { $$ = new zu::block_node(LINE, $2, NULL); }                       
       | '{' instructions'}'             { $$ = new zu::block_node(LINE, NULL, $2); } 
       | '{' '}'                         { $$ = new zu::block_node(LINE, NULL, NULL); }
       | '{' list instructions '}'       { $$ = new zu::block_node(LINE, $2, $3); }
       ;
-      
+    
+/*  
+    Sequencia de instruções.
+*/
 instructions: instruction               { $$ = new cdk::sequence_node(LINE, $1); }
             | instructions instruction  { $$ = new cdk::sequence_node(LINE, $2, $1); }
             ;
 
+/*  
+    Instruções.
+*/
 instruction : expr ';'                  { $$ = new zu::evaluation_node(LINE, $1);}
             | expr '!'                  {/*impressao sem newline*/$$ = new zu::print_node(LINE, $1, false);}
             | expr tNLPRINT             {/*impressao com newline*/ $$ = new zu::print_node(LINE, $1, true);}
@@ -103,16 +111,38 @@ instruction : expr ';'                  { $$ = new zu::evaluation_node(LINE, $1)
             | block                     { $$ = $1;}
             ;
             
+/*  
+    Instruções condicionais.
+*/
 cond_instruction : expr '#' instruction                  { $$ = new zu::if_else_node(LINE, $1, $3, NULL);}
                  | expr '?' instruction                  { $$ = new zu::if_else_node(LINE, $1, $3, NULL);}
                  | expr '?' instruction ':' instruction  { $$ = new zu::if_else_node(LINE, $1, $3, $5); }
                  ;
-   
-loop_instruction : '[' exprs     ';' exprs ';' exprs ']' instruction   { $$ = new zu::for_node(LINE, $2, $4, $6 , $8);}
-                 | '[' variables ';' exprs ';' exprs ']' instruction   { $$ = new zu::for_node(LINE, $2, $4, $6, $8);}
+ 
+/*
+   Instruções de ciclo.
+
+   Fica com aspecto ridiculo, mas nao conseguia resolver conflito reduce/reduce sem ser assim.
+   É possivel fazer isto com duas regras, adicionando uma regra vazia n-terminal 'exprs', mas aparece o conflito.
+*/
+loop_instruction : '[' exprs     ';'       ';'       ']' instruction        { $$ = new zu::for_node(LINE, $2, NULL, NULL, $6);}
+                 | '['           ';' exprs ';'       ']' instruction        { $$ = new zu::for_node(LINE, NULL, $3, NULL, $6);}
+                 | '['           ';'       ';' exprs ']' instruction        { $$ = new zu::for_node(LINE, NULL , NULL, $4, $6);}
+                 | '[' exprs     ';' exprs ';'       ']' instruction        { $$ = new zu::for_node(LINE, $2, $4, NULL, $7);}
+                 | '['           ';' exprs ';' exprs ']' instruction        { $$ = new zu::for_node(LINE, NULL, $3, $5 , $7);}
+                 | '[' exprs     ';'       ';' exprs ']' instruction        { $$ = new zu::for_node(LINE, $2, NULL, $5, $7);}
+                 | '[' exprs     ';' exprs ';' exprs ']' instruction        { $$ = new zu::for_node(LINE, $2, $4, $6 , $8);}
+                 | '['           ';'       ';'       ']' instruction        { $$ = new zu::for_node(LINE, NULL, NULL, NULL, $5);}
+                 | '[' variables ';'       ';'       ']' instruction        { $$ = new zu::for_node(LINE, $2, NULL, NULL, $6);}
+                 | '[' variables ';' exprs ';'       ']' instruction        { $$ = new zu::for_node(LINE, $2, $4, NULL, $7);}
+                 | '[' variables ';'       ';' exprs ']' instruction        { $$ = new zu::for_node(LINE, $2, NULL, $5, $7);}
+                 | '[' variables ';' exprs ';' exprs ']' instruction        { $$ = new zu::for_node(LINE, $2, $4, $6, $8);}
                  ; 
 
-/* id_func!() -> funçao global 
+/* 
+   Declaraçao de funçoes.
+   
+   id_func!() -> funçao global 
    id_func?() -> funcao definida noutro modulo
    
    !id_func() -> retorna void
@@ -126,13 +156,20 @@ declare_function : type tIDENTIFIER  '(' variables ')'                 {$$ = new
          ;
 
    
-/* Os argumentos de uma funçao, por exemplo: uma ou mais variaveis. */
+/* 
+   Os argumentos de uma funçao, por exemplo: uma ou mais variaveis. 
+   Tambem usada na parte das inicializaçoes de um ciclo for.
+*/
 variables : assign_variable                                     {$$ = new cdk::sequence_node(LINE, $1);}
           | variables ',' assign_variable                       {$$ = new cdk::sequence_node(LINE, $3 ,$1);}
-          | %prec tSECOND_LOWEST_ASSOC                         {$$ = NULL;}
+          | %prec tLOWEST_ASSOC                                 {$$ = NULL;}
           ;
 
-
+/*
+   Declaraçao de variaveis. 
+   ! -> variavel global.
+   ? -> variavel definida noutro módulo
+*/
 declare_variable : type tIDENTIFIER                     { std::cout << "Read clean var decl." << std::endl;
                                                           $$ = new zu::declare_var_node(LINE,$1, $2, true, false, false);}
                  | type tIDENTIFIER '!'                 { std::cout << "Read public var decl." << std::endl;
@@ -141,31 +178,46 @@ declare_variable : type tIDENTIFIER                     { std::cout << "Read cle
                                                           $$ = new zu::declare_var_node(LINE,$1, $2, true, true, false);}
                  ; 
       
+/*
+   Inicializaçao de variaveis. 
+*/    
 assign_variable : declare_variable                      { $$ = $1; }
                 | declare_variable '=' expr             { $$ = new zu::assignment_node(LINE, $1, $3 ); }
                 ;
                 
-/* tipos primitivos
-   tipo void? "!" */
+/* 
+   Tipos primitivos.
+   # -> inteiro
+   $ -> cadeia de caracteres
+   % -> numero virgual flutuante (8 bytes => double)
+   <#>, <$>, <%> -> ponteiro para inteiro, etc..
+   ! -> void
+*/
 type : '#'                                              { $$ = new basic_type(4, basic_type::TYPE_INT); }
      | tDOUBLE                                          { $$ = new basic_type(8, basic_type::TYPE_DOUBLE); }
      | tSTRING                                          { $$ = new basic_type(4, basic_type::TYPE_STRING); }
      | '<' type '>'                                     { $$ = new basic_type(4, basic_type::TYPE_POINTER); }
      | '!'                                              { $$ = new basic_type(1, basic_type::TYPE_VOID); }
      ;
-     
-literal : tLINTEGER                                     { $$ = new cdk::integer_node(LINE, $1); }
-        | string_literal %prec tLOWEST_ASSOC                                { $$ = $1; std::cout << "New string read: " << $1->value() << std::endl; }
-        | tLDOUBLE                                      { $$ = new cdk::double_node(LINE, $1); std::cout << "New double literal read: " << $1 << std::endl; }
+ 
+ 
+/*
+    Literais:
+    inteiros 
+    doubles: 1.2, .2, 1.1e3, 10e12, etc...
+    cadeias de caracteres: "uma string" e "uma" " string" sao equivalentes.
+*/
+literal : tLINTEGER                                    { $$ = new cdk::integer_node(LINE, $1); }
+        | string_literal %prec tLOWEST_ASSOC           { $$ = $1; std::cout << "New string read: " << $1->value() << std::endl; }
+        | tLDOUBLE                                     { $$ = new cdk::double_node(LINE, $1); std::cout << "New double literal read: " << $1 << std::endl; }
         ;
         
-string_literal : tLSTRING                               { $$ = new cdk::string_node(LINE, $1); }
+string_literal : tLSTRING                              { $$ = new cdk::string_node(LINE, $1); }
                | string_literal tLSTRING               { $$ = new cdk::string_node(LINE, $1->value() + $2->c_str()); }
                ;
 
-/*Falta:
-    indexaçao?
-    
+/*
+    Expressoes.
 */
 expr : literal                         { $$ = $1;}
      
@@ -196,18 +248,31 @@ expr : literal                         { $$ = $1;}
      | lval '=' expr                   { $$ = new zu::assignment_node(LINE, $1, $3); }
      ;
 
+/*
+    Sequencia de expressoes.
+*/
 exprs : expr                           { $$ = new cdk::sequence_node(LINE, $1);}
       | exprs ',' expr                 { $$ = new cdk::sequence_node(LINE, $3, $1); }
-      | %prec tLOWEST_ASSOC                            { $$ = NULL;}
       ;
      
+/*  
+    Expressões com variaveis.
+*/
 variable_expr : lval                   { $$ = new zu::rvalue_node(LINE, $1); }      
               | func_call              { $$ = $1;}
               ;
      
+/*
+    Chamada de funçoes, com ou sem argumentos.
+*/
 func_call : tIDENTIFIER '(' exprs ')'  { $$ = new zu::function_call_node(LINE, $1, $3);}
+          | tIDENTIFIER '(' ')'        { $$ = new zu::function_call_node(LINE, $1, NULL);}
           ;
      
+/*
+    Left values.
+    i.e variable_id, array_id[3], etc...
+*/
 lval : tIDENTIFIER                     { $$ = new zu::lvalue_node(LINE, $1); }
      | expr '[' expr ']'               { $$ = new zu::index_node(LINE, $1, $3);} //CAUSING SEG FAULT
      ;
