@@ -101,7 +101,7 @@ instruction : expr ';'                  { $$ = new zu::evaluation_node(LINE, $1)
             ;
             
 cond_instruction : expr '#' instruction                 { $$ = new zu::if_else_node(LINE, $1, $3, NULL);}
-                 | expr '?' instruction                 { $$ = new zu::if_else_node(LINE, $1, $3, NULL);}
+                 | expr '?' instruction     { $$ = new zu::if_else_node(LINE, $1, $3, NULL);}
                  | expr '?' instruction ':' instruction { $$ = new zu::if_else_node(LINE, $1, $3, $5); }
                  ;
    

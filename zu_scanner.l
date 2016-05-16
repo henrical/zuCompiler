@@ -192,7 +192,7 @@ FLOAT_SCI_NOTATION_2        [0-9]*\.[0-9]+([Ee][-+]?[0-9]+)
                                                 }
 
 
-[-+?!*()=;,{}\[\]]                                  return *yytext;
+[-+?!*:()=;,{}\[\]]                                  return *yytext;
 
 {WHITESPACE}                                    ; /* ignore whitespace */
 
