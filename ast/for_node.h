@@ -11,26 +11,26 @@ namespace zu {
    */
   class for_node: public cdk::basic_node {
     
-    cdk::expression_node *_init; //a inicializacao da variavel de iteraçao (i = 0)  
-    cdk::expression_node *_condition; //a condiçao (i < 5)
-    cdk::expression_node *_increment; //o incremento (i++)
+    cdk::sequence_node *_init; //a inicializacao da variavel de iteraçao (i = 0)  
+    cdk::sequence_node *_condition; //a condiçao (i < 5)
+    cdk::sequence_node *_increment; //o incremento (i++)
     cdk::basic_node *_instruction; //o bloco de instruçoes dentro do ciclo
 
   public:
-    inline for_node(int lineno,cdk::expression_node *init, cdk::expression_node *condition, cdk::expression_node *increment, cdk::basic_node *instruction) 
+    inline for_node(int lineno,cdk::sequence_node *init, cdk::sequence_node *condition, cdk::sequence_node *increment, cdk::basic_node *instruction) 
     :basic_node(lineno),_init(init), _condition(condition), _increment(increment), _instruction(instruction) 
     { }
 
   public:
-    inline cdk::expression_node *init() {
+    inline cdk::sequence_node *init() {
       return _init;
     }  
       
-    inline cdk::expression_node *condition() {
+    inline cdk::sequence_node *condition() {
       return _condition;
     }
     
-    inline cdk::expression_node *increment() {
+    inline cdk::sequence_node *increment() {
       return _increment;
     }
     

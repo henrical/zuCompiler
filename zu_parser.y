@@ -45,16 +45,19 @@
 /* %nonassoc tIDENTIFIER */
 /* %nonassoc tEMPTY */
 %nonassoc tUNARY 
+%nonassoc tSECOND_LOWEST_ASSOC
 /* %nonassoc tEXPR */
 %nonassoc tLINTEGER tLSTRING tLDOUBLE
 %nonassoc ','
 %nonassoc '!' '?'
-%nonassoc ':'
+%nonassoc ':' 
+%nonassoc ';'
+%nonassoc tHIGHEST_ASSOC
 %left tLEFT_PREC
 %right tRIGHT_PREC
 
-%type <node> stmt assign_variable block instruction cond_instruction
-%type <sequence> list arguments exprs instructions
+%type <node> stmt assign_variable block instruction cond_instruction loop_instruction
+%type <sequence> list variables exprs instructions
 %type <expression> expr literal variable_expr func_call
 %type <lvalue> lval declare_variable
 %type <type> type
@@ -96,23 +99,17 @@ instruction : expr ';'                  { $$ = new zu::evaluation_node(LINE, $1)
             | tCONTINUE                 { $$ = new zu::continue_node(LINE);}
             | tRETURN                   { $$ = new zu::return_node(LINE);}
             | cond_instruction          { $$ = $1;}
-/*            | loop_instruction          { $$ = $1;}*/
+            | loop_instruction          { $$ = $1;}
             | block                     { $$ = $1;}
             ;
             
-cond_instruction : expr '#' instruction                 { $$ = new zu::if_else_node(LINE, $1, $3, NULL);}
-                 | expr '?' instruction     { $$ = new zu::if_else_node(LINE, $1, $3, NULL);}
-                 | expr '?' instruction ':' instruction { $$ = new zu::if_else_node(LINE, $1, $3, $5); }
+cond_instruction : expr '#' instruction                  { $$ = new zu::if_else_node(LINE, $1, $3, NULL);}
+                 | expr '?' instruction                  { $$ = new zu::if_else_node(LINE, $1, $3, NULL);}
+                 | expr '?' instruction ':' instruction  { $$ = new zu::if_else_node(LINE, $1, $3, $5); }
                  ;
    
-loop_instruction : '[' exprs ';'       ';'       ']' instruction  
-                 | '['       ';' exprs ';'       ']' instruction   
-                 | '['       ';'       ';' exprs ']' instruction
-/*                 | '[' exprs ';' exprs ';'       ']' instruction
-                 | '['       ';' exprs ';' exprs ']' instruction
-                 | '[' exprs ';'       ';' exprs ']' instruction
-                 | '[' exprs ';' exprs ';' exprs ']' instruction 
-                 | '['       ';'       ';'       ']' instruction*/
+loop_instruction : '[' exprs     ';' exprs ';' exprs ']' instruction   { $$ = new zu::for_node(LINE, $2, $4, $6 , $8);}
+                 | '[' variables ';' exprs ';' exprs ']' instruction   { $$ = new zu::for_node(LINE, $2, $4, $6, $8);}
                  ; 
 
 /* id_func!() -> funçao global 
@@ -120,20 +117,20 @@ loop_instruction : '[' exprs ';'       ';'       ']' instruction
    
    !id_func() -> retorna void
 */
-declare_function : type tIDENTIFIER  '(' arguments ')'                 {$$ = new zu::function_declaration_node(LINE, $1, NULL, true, false, $4 ); }
-         | type tIDENTIFIER  '(' arguments ')' '=' literal     {$$ = new zu::function_declaration_node(LINE, $1, $7, true, false, $4 ); }
-         | type tIDENTIFIER '!' '(' arguments ')'              {$$ = new zu::function_declaration_node(LINE, $1, NULL, false, false, $5);}
-         | type tIDENTIFIER '!' '(' arguments ')' '=' literal  {$$ = new zu::function_declaration_node(LINE, $1, $8, false, false, $5);}
-         | type tIDENTIFIER '?' '(' arguments ')'              {$$ = new zu::function_declaration_node(LINE, $1, NULL, true, true, $5 );}
-         | type tIDENTIFIER '?' '(' arguments ')' '=' literal  {$$ = new zu::function_declaration_node(LINE, $1, $8, true, true, $5 );}
+declare_function : type tIDENTIFIER  '(' variables ')'                 {$$ = new zu::function_declaration_node(LINE, $1, NULL, true, false, $4 ); }
+         | type tIDENTIFIER  '(' variables ')' '=' literal     {$$ = new zu::function_declaration_node(LINE, $1, $7, true, false, $4 ); }
+         | type tIDENTIFIER '!' '(' variables ')'              {$$ = new zu::function_declaration_node(LINE, $1, NULL, false, false, $5);}
+         | type tIDENTIFIER '!' '(' variables ')' '=' literal  {$$ = new zu::function_declaration_node(LINE, $1, $8, false, false, $5);}
+         | type tIDENTIFIER '?' '(' variables ')'              {$$ = new zu::function_declaration_node(LINE, $1, NULL, true, true, $5 );}
+         | type tIDENTIFIER '?' '(' variables')' '=' literal  {$$ = new zu::function_declaration_node(LINE, $1, $8, true, true, $5 );}
          ;
 
    
-/* Os argumentos de uma funçao: uma ou mais variaveis. */
-arguments: assign_variable                                     {$$ = new cdk::sequence_node(LINE, $1);}
-         | arguments ',' assign_variable                       {$$ = new cdk::sequence_node(LINE, $3 ,$1);}
-         |                                                     {$$ = NULL;}
-         ;
+/* Os argumentos de uma funçao, por exemplo: uma ou mais variaveis. */
+variables : assign_variable                                     {$$ = new cdk::sequence_node(LINE, $1);}
+          | variables ',' assign_variable                       {$$ = new cdk::sequence_node(LINE, $3 ,$1);}
+          | %prec tSECOND_LOWEST_ASSOC                         {$$ = NULL;}
+          ;
 
 
 declare_variable : type tIDENTIFIER                     { std::cout << "Read clean var decl." << std::endl;
@@ -201,7 +198,7 @@ expr : literal                         { $$ = $1;}
 
 exprs : expr                           { $$ = new cdk::sequence_node(LINE, $1);}
       | exprs ',' expr                 { $$ = new cdk::sequence_node(LINE, $3, $1); }
-      |                                { $$ = NULL;}
+      | %prec tLOWEST_ASSOC                            { $$ = NULL;}
       ;
      
 variable_expr : lval                   { $$ = new zu::rvalue_node(LINE, $1); }      
