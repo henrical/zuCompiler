@@ -35,7 +35,6 @@ class print_node;
 class return_node; 
 class symmetry_node; 
 class index_node; 
-class variable_node; 
 class or_node; 
 class identity_node; 
 class declare_var_node; 
@@ -102,7 +101,6 @@ class if_else_node;
 #include "ast/return_node.h"
 #include "ast/symmetry_node.h"
 #include "ast/index_node.h"
-#include "ast/variable_node.h"
 #include "ast/or_node.h"
 #include "ast/identity_node.h"
 #include "ast/declare_var_node.h"

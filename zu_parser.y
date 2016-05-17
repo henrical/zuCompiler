@@ -1,5 +1,5 @@
 %{
-// $Id: zu_parser.y,v 1.11 2016/05/14 22:50:04 ist175838 Exp $
+// $Id: zu_parser.y,v 1.12 2016/05/16 17:30:33 ist175838 Exp $
 //-- don't change *any* of these: if you do, you'll break the compiler.
 #include <cdk/compiler.h>
 #include "ast/all.h"
@@ -123,7 +123,7 @@ cond_instruction : expr '#' instruction                  { $$ = new zu::if_else_
    Instruções de ciclo.
 
    Fica com aspecto ridiculo, mas nao conseguia resolver conflito reduce/reduce sem ser assim.
-   É possivel fazer isto com duas regras, adicionando uma regra vazia n-terminal 'exprs', mas aparece o conflito.
+   É possivel fazer isto com duas regras, adicionando uma regra vazia ao não-terminal 'exprs', mas aparece o conflito.
 */
 loop_instruction : '[' exprs     ';'       ';'       ']' instruction        { $$ = new zu::for_node(LINE, $2, NULL, NULL, $6);}
                  | '['           ';' exprs ';'       ']' instruction        { $$ = new zu::for_node(LINE, NULL, $3, NULL, $6);}
@@ -147,12 +147,12 @@ loop_instruction : '[' exprs     ';'       ';'       ']' instruction        { $$
    
    !id_func() -> retorna void
 */
-declare_function : type tIDENTIFIER  '(' variables ')'                 {$$ = new zu::function_declaration_node(LINE, $1, NULL, true, false, $4 ); }
+declare_function : type tIDENTIFIER  '(' variables ')'         {$$ = new zu::function_declaration_node(LINE, $1, NULL, true, false, $4 ); }
          | type tIDENTIFIER  '(' variables ')' '=' literal     {$$ = new zu::function_declaration_node(LINE, $1, $7, true, false, $4 ); }
          | type tIDENTIFIER '!' '(' variables ')'              {$$ = new zu::function_declaration_node(LINE, $1, NULL, false, false, $5);}
          | type tIDENTIFIER '!' '(' variables ')' '=' literal  {$$ = new zu::function_declaration_node(LINE, $1, $8, false, false, $5);}
          | type tIDENTIFIER '?' '(' variables ')'              {$$ = new zu::function_declaration_node(LINE, $1, NULL, true, true, $5 );}
-         | type tIDENTIFIER '?' '(' variables')' '=' literal  {$$ = new zu::function_declaration_node(LINE, $1, $8, true, true, $5 );}
+         | type tIDENTIFIER '?' '(' variables')' '=' literal   {$$ = new zu::function_declaration_node(LINE, $1, $8, true, true, $5 );}
          ;
 
    
@@ -205,7 +205,11 @@ type : '#'                                              { $$ = new basic_type(4,
     Literais:
     inteiros 
     doubles: 1.2, .2, 1.1e3, 10e12, etc...
-    cadeias de caracteres: "uma string" e "uma" " string" sao equivalentes.
+    cadeias de caracteres: "uma string"
+    Concatenaçao: 
+        $str1 = "uma string"; 
+        $str2 = "uma" " string";
+        str1 == str2 devolve true
 */
 literal : tLINTEGER                                    { $$ = new cdk::integer_node(LINE, $1); }
         | string_literal %prec tLOWEST_ASSOC           { $$ = $1; std::cout << "New string read: " << $1->value() << std::endl; }

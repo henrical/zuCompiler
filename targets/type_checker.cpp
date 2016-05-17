@@ -138,87 +138,114 @@ void zu::type_checker::do_print_node(zu::print_node * const node, int lvl) {
 //---------------------------------------------------------------------------
 
 void zu::type_checker::do_read_node(zu::read_node * const node, int lvl) {
+    //FIXME: o readnode esta a correto?
+    //     ASSERT_UNSPEC;
+    node->argument()->accept(this, lvl + 2);
 }
 
 //---------------------------------------------------------------------------
 void zu::type_checker::do_for_node(zu::for_node * const node, int lvl) {
-        //FIXME
+    node->init()->accept(this, lvl + 2);
+    node->condition()->accept(this, lvl + 2);
+    node->increment()->accept(this, lvl + 2);
 }
 
 //---------------------------------------------------------------------------
 void zu::type_checker::do_if_else_node(zu::if_else_node * const node, int lvl) {
-  node->condition()->accept(this, lvl + 4);
+    node->condition()->accept(this, lvl + 4);
 }
 
 //---------------------------------------------------------------------------
 void zu::type_checker::do_continue_node(zu::continue_node * const node, int lvl) {
-        //FIXME
+    //do nothing...
 }
 
 //---------------------------------------------------------------------------
 
 void zu::type_checker::do_block_node(zu::block_node * const node, int lvl) {
-        //FIXME
+    node->declarations()->accept(this, lvl + 4);
+    node->instructions()->accept(this, lvl + 4);
 }
 
 //---------------------------------------------------------------------------
 
 void zu::type_checker::do_break_node(zu::break_node * const node, int lvl) {
-    //FIXME
+    //do nothing...
 }
 
 //---------------------------------------------------------------------------
 
 void zu::type_checker::do_return_node(zu::return_node * const node, int lvl) {
-    //FIXME
+    //do nothing...
 }
 
 //---------------------------------------------------------------------------
 
 void zu::type_checker::do_identifier_node(zu::identifier_node * const node, int lvl) {
-    //FIXME
+    ASSERT_UNSPEC;
+    
+    const std::string &id = node->value();
+    
+    std::shared_ptr<zu::symbol> symbol = _symtab.find(id);
+    
+    if (symbol == nullptr) 
+        throw id + " undeclared";
+    
+    const basic_type* const_type = symbol->type();
+    basic_type type = *const_type;
+    
+    node->type(&type);
 }
 
 //---------------------------------------------------------------------------
 
 void zu::type_checker::do_index_node(zu::index_node * const node, int lvl) {
-    //FIXME
+    //FIXME: corrigir index_node (yacc, etc..)
+    //FIXME: implementar este visitor
 }
 
 //---------------------------------------------------------------------------
 
 void zu::type_checker::do_and_node(zu::and_node * const node, int lvl) {
-    //FIXME
+    processBinaryExpression(node, lvl + 2);
 }
 
 //---------------------------------------------------------------------------
 
 void zu::type_checker::do_or_node(zu::or_node * const node, int lvl) {
-    //FIXME
+    processBinaryExpression(node, lvl + 2);
 }
 
 //---------------------------------------------------------------------------
 
 void zu::type_checker::do_identity_node(zu::identity_node * const node, int lvl) {
-    //FIXME
+    processUnaryExpression(node, lvl + 2);
 }
 
 //---------------------------------------------------------------------------
 
 void zu::type_checker::do_symmetry_node(zu::symmetry_node * const node, int lvl) {
-    //FIXME
+    processUnaryExpression(node, lvl + 2);
 }
 
-//---------------------------------------------------------------------------
-
-void zu::type_checker::do_variable_node(zu::variable_node * const node, int lvl) {
-    //FIXME
-}
 
 //---------------------------------------------------------------------------
 void zu::type_checker::do_declare_var_node(zu::declare_var_node * const node, int lvl)
 {
-    //FIXME
+   if(_symtab.find_local(node->value())!= nullptr){
+     throw std::string("Error: \"" + node->value() + "\" already defined in this scope.");
+   }
+   
+  else{
+    if(!node->isLocal()){ // GLOBAL VARIABLE !!!!
+//       _symtab.insert(""+node->value(),
+// 	std::make_shared<zu::symbol>(node->type(),false,node->isLocal(),node->isImport(),node->isConst(),""));
+    }
+    else{ // LOCAL VARIABLE !!!
+//       _symtab.insert(""+node->value(),
+// 	std::make_shared<zu::symbol>(node->type()));
+    }
+  }
 }
 
 //---------------------------------------------------------------------------

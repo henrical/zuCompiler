@@ -27,6 +27,7 @@ namespace zu {
         cdk::simple_value_node<std::string>(lineno, nullptr) {
     }
 
+  public:
     /**
      * @param sp semantic processor visitor
      * @param level syntactic tree level

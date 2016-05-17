@@ -9,14 +9,14 @@
 
 namespace zu {
 
-class declare_var_node: public zu::variable_node  {
+class declare_var_node: public zu::lvalue_node  {
    bool _local;
    bool _import;
    bool _func_arg;
 
   public:
     inline declare_var_node(int lineno, basic_type * type, std::string * identifier, bool local, bool import, bool func_arg) :
-      zu::variable_node(lineno,identifier)
+      zu::lvalue_node(lineno,identifier)
         ,_local(local),_import(import),_func_arg(func_arg) {
 	_type=type;
     }

@@ -264,11 +264,6 @@ void zu::postfix_writer::do_symmetry_node(zu::symmetry_node * const node, int lv
 }
 
 //---------------------------------------------------------------------------
-void zu::postfix_writer::do_variable_node(zu::variable_node * const node, int lvl) {
-    //FIXME
-}
-
-//---------------------------------------------------------------------------
 void zu::postfix_writer::do_declare_var_node(zu::declare_var_node * const node, int lvl)
 {
     //FIXME
