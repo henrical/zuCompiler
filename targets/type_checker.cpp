@@ -1,4 +1,4 @@
-// $Id: type_checker.cpp,v 1.14 2016/04/06 16:20:27 ist175838 Exp $ -*- c++ -*-
+// $Id: type_checker.cpp,v 1.15 2016/05/18 20:32:57 ist175838 Exp $ -*- c++ -*-
 #include <string>
 #include "targets/type_checker.h"
 #include "ast/all.h"  // automatically generated
@@ -108,24 +108,34 @@ void zu::type_checker::do_assignment_node(zu::assignment_node * const node, int 
 
   // DAVID: horrible hack!
   // (this is caused by Zu not having explicit variable declarations)
-  const std::string &id = node->lvalue()->value();
-  if (!_symtab.find(id)) {
-      int offset = -1;
-      bool defined = true;
-    _symtab.insert(id, std::make_shared<zu::symbol>(new basic_type(4, basic_type::TYPE_INT), id, defined, offset)); // put in the symbol table
-  }
+//   const std::string &id = node->lvalue()->value();
+//   if (!_symtab.find(id)) 
+//   {
+//       int offset = -1;
+//       bool defined = true;
+//      _symtab.insert(id, std::make_shared<zu::symbol>(new basic_type(4, basic_type::TYPE_INT), id, defined, offset)); // put in the symbol table
+//   }
 
-  
-  node->lvalue()->accept(this, lvl + 2);
-  if (node->lvalue()->type()->name() != basic_type::TYPE_INT)
-    throw std::string("wrong type in left argument of assignment expression");
-
-  node->rvalue()->accept(this, lvl + 2);
-  if (node->rvalue()->type()->name() != basic_type::TYPE_INT)
-    throw std::string("wrong type in right argument of assignment expression");
-
+    node->lvalue()->accept(this, lvl + 2);
+    node->rvalue()->accept(this, lvl + 2);
+    if (node->lvalue()->type()->name() != node->rvalue()->type()->name())
+    {
+        //Conversao implicita double para integer.
+        if(node->lvalue()->type()->name() == basic_type::TYPE_INT 
+                                    && 
+           node->rvalue()->type()->name() == basic_type::TYPE_DOUBLE)
+        {
+            //converter valor a ser atribuido para inteiro.
+            node->rvalue()->type(new basic_type(4, basic_type::TYPE_INT));     
+        }
+        else
+            throw std::string("Mismatched types in assignment expression of variable \"" + node->lvalue()->value() + "\": cannot implicitely convert rvalue to type of lvalue." );
+//             throw std::string("Mismatched types in assignment expression of variable \"" + node->lvalue()->value() + "\": cannot implicitely convert rvalue of type \"" + node->rvalue()->type()->name() + "\" to \"" + node->lvalue()->type()->name() + "\"." );
+    }
+    
+    
   // in Zu, expressions are always int
-  node->type(new basic_type(4, basic_type::TYPE_INT));
+  node->type(node->lvalue()->type());
 }
 
 //---------------------------------------------------------------------------
@@ -234,29 +244,29 @@ void zu::type_checker::do_symmetry_node(zu::symmetry_node * const node, int lvl)
 
 //---------------------------------------------------------------------------
 void zu::type_checker::do_declare_var_node(zu::declare_var_node * const node, int lvl)
-{
-   if(_symtab.find_local(node->value())!= nullptr){
-     throw std::string("Error: \"" + node->value() + "\" already defined in this scope.");
-   }
-   
+{  
    const std::string &id = node->value();
    bool local = node->isLocal();
    
    
     if(!local)
     { // GLOBAL VARIABLE 
-      bool defined = false;
-      bool imported = node->isImport();
-      std::string label = ""; //atribuir label mais tarde
-      _symtab.insert(id, std::make_shared<zu::symbol>(node->type(),
-                                                      id,
-                                                      defined,
-                                                      imported,
-                                                      label)
-                    );
+        bool defined = false;
+        bool imported = node->isImport();
+        std::string label = ""; //atribuir label mais tarde
+        _symtab.insert(id, std::make_shared<zu::symbol>(node->type(),
+                                                        id,
+                                                        defined,
+                                                        imported,
+                                                        label)
+                      );
     }
     else
     { // LOCAL VARIABLE
+        if(_symtab.find_local(node->value())!= nullptr){
+            throw std::string("Error: \"" + node->value() + "\" already defined in this scope.");
+        }
+        
         bool defined = false;
         int offset = -1;
         _symtab.insert( id, std::make_shared<zu::symbol>(node->type(),

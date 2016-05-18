@@ -1,4 +1,4 @@
-// $Id: postfix_writer.cpp,v 1.15 2016/04/06 16:20:27 ist175838 Exp $ -*- c++ -*-
+// $Id: postfix_writer.cpp,v 1.16 2016/05/18 20:32:57 ist175838 Exp $ -*- c++ -*-
 #include <string>
 #include <sstream>
 #include "targets/type_checker.h"

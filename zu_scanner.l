@@ -132,7 +132,7 @@ FLOAT_SCI_NOTATION_2        [0-9]*\.[0-9]+([Ee][-+]?[0-9]+)
 
 "#"                                             return *yytext;
 "$"                                             /*printLexeme("string", "$", yylineno);*/ return tSTRING; 
-"%"                                             /*printLexeme("float", "%", yylineno);*/  return tDOUBLE; //FIXME: '%' pode ser um operador.
+"%"                                             /*printLexeme("float", "%", yylineno);*/  return *yytext; 
 
 "<"                                             return *yytext;  
 ">"                                             return *yytext; 
@@ -192,7 +192,7 @@ FLOAT_SCI_NOTATION_2        [0-9]*\.[0-9]+([Ee][-+]?[0-9]+)
                                                 }
 
 
-[-+?!*:()=;,{}\[\]]                                  return *yytext;
+[&-+\|?!*:()=;,{}\[\]\/]                                  return *yytext;
 
 {WHITESPACE}                                    ; /* ignore whitespace */
 

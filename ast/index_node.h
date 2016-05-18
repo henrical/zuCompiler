@@ -1,4 +1,4 @@
-// $Id: index_node.h,v 1.5 2016/05/14 22:50:04 ist175838 Exp $ -*- c++ -*-
+// $Id: index_node.h,v 1.6 2016/05/18 20:32:57 ist175838 Exp $ -*- c++ -*-
 #ifndef __ZU_INDEXNODE_H__
 #define __ZU_INDEXNODE_H__
 

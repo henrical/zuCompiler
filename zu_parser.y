@@ -1,5 +1,5 @@
 %{
-// $Id: zu_parser.y,v 1.12 2016/05/16 17:30:33 ist175838 Exp $
+// $Id: zu_parser.y,v 1.13 2016/05/18 20:32:57 ist175838 Exp $
 //-- don't change *any* of these: if you do, you'll break the compiler.
 #include <cdk/compiler.h>
 #include "ast/all.h"
@@ -27,7 +27,7 @@
 %token <i> tLINTEGER 
 %token <s> tIDENTIFIER tLSTRING  
 %token <d> tLDOUBLE
-%token tWHILE tIF tPRINT tREAD tBEGIN tEND tSTRING tDOUBLE  tIDENTIFIER tCONTINUE tBREAK tRETURN tNLPRINT
+%token tWHILE tIF tPRINT tREAD tBEGIN tEND tSTRING tIDENTIFIER tCONTINUE tBREAK tRETURN tNLPRINT
 
 %right '='
 %left tGE tLE tEQ tNE 
@@ -39,7 +39,6 @@
 %nonassoc tLOWEST_ASSOC
 %nonassoc '[' ']'
 %nonassoc '{' '}'
-/*%nonassoc '#' tDOUBLE tSTRING*/
 /* %nonassoc tIDENTIFIER */
 /* %nonassoc tEMPTY */
 %nonassoc tUNARY 
@@ -192,7 +191,7 @@ assign_variable : declare_variable                      { $$ = $1; }
    ! -> void
 */
 type : '#'                                              { $$ = new basic_type(4, basic_type::TYPE_INT); }
-     | tDOUBLE                                          { $$ = new basic_type(8, basic_type::TYPE_DOUBLE); }
+     | '%'                                              { $$ = new basic_type(8, basic_type::TYPE_DOUBLE); }
      | tSTRING                                          { $$ = new basic_type(4, basic_type::TYPE_STRING); }
      | '<' type '>'                                     { $$ = new basic_type(4, basic_type::TYPE_POINTER); }
      | '!'                                              { $$ = new basic_type(0, basic_type::TYPE_VOID); }
@@ -237,7 +236,7 @@ expr : literal                         { $$ = $1;}
      | expr '-' expr	               { $$ = new cdk::sub_node(LINE, $1, $3); }
      | expr '*' expr	               { $$ = new cdk::mul_node(LINE, $1, $3); }
      | expr '/' expr	               { $$ = new cdk::div_node(LINE, $1, $3); }
-     | expr '%' expr	               { $$ = new cdk::mod_node(LINE, $1, $3); } /* '%' e apenas para inteiros */
+     | expr '%' expr	               { $$ = new cdk::mod_node(LINE, $1, $3); }
      | expr '<' expr                   { $$ = new cdk::lt_node(LINE, $1, $3); }
      | expr '>' expr                   { $$ = new cdk::gt_node(LINE, $1, $3); }
      | expr tGE expr	               { $$ = new cdk::ge_node(LINE, $1, $3); }

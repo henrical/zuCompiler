@@ -1,4 +1,4 @@
-// $Id: and_node.h,v 1.1 2016/03/17 22:22:33 ist175838 Exp $ -*- c++ -*-
+// $Id: and_node.h,v 1.2 2016/05/18 20:32:57 ist175838 Exp $ -*- c++ -*-
 #ifndef __ZU_ANDNODE_H__
 #define __ZU_ANDNODE_H__
 
