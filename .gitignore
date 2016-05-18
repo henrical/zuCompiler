@@ -1,0 +1,12 @@
+*.o
+*.pl
+zu
+*.tab.*
+*.output
+*.doxyfile
+CVS
+.cvsignore
+*swp
+*~
+libcdk/
+zu_scanner.cpp
