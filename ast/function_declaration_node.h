@@ -25,6 +25,7 @@ namespace zu {
         cdk::basic_node(lineno), _type(type), _literal(literal), _arguments(arguments), _isLocal(is_local), _isImported(is_imported)
     {   
 //        std::cout << "FUNCTION_DECLARATION node." << std::endl; 
+
     }
 
   public:

@@ -14,7 +14,7 @@ namespace zu {
     :cdk::unary_expression_node(lineno, arg)
     {
 //         std::cout << "MEMORY_ADDRESS node." << std::endl;
-    };
+    }
         
   public:
     void accept(basic_ast_visitor *sp, int level) {

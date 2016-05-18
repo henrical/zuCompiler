@@ -13,6 +13,7 @@ namespace zu {
     inline and_node(int lineno, cdk::expression_node * left,  cdk::expression_node * right ) :
         cdk::binary_expression_node(lineno, left, right){
 //         std::cout << "FUNC_CALL node." << std::endl;
+
     }
 
   public:
