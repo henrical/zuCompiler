@@ -147,13 +147,14 @@ loop_instruction : '[' exprs     ';'       ';'       ']' instruction        { $$
    
    !id_func() -> retorna void
 */
-declare_function : type tIDENTIFIER  '(' variables ')'         {$$ = new zu::function_declaration_node(LINE, $1, NULL, true, false, $4 ); }
-         | type tIDENTIFIER  '(' variables ')' '=' literal     {$$ = new zu::function_declaration_node(LINE, $1, $7, true, false, $4 ); }
-         | type tIDENTIFIER '!' '(' variables ')'              {$$ = new zu::function_declaration_node(LINE, $1, NULL, false, false, $5);}
-         | type tIDENTIFIER '!' '(' variables ')' '=' literal  {$$ = new zu::function_declaration_node(LINE, $1, $8, false, false, $5);}
-         | type tIDENTIFIER '?' '(' variables ')'              {$$ = new zu::function_declaration_node(LINE, $1, NULL, true, true, $5 );}
-         | type tIDENTIFIER '?' '(' variables')' '=' literal   {$$ = new zu::function_declaration_node(LINE, $1, $8, true, true, $5 );}
-         ;
+declare_function 
+: type tIDENTIFIER  '(' variables ')'                 {$$ = new zu::function_declaration_node(LINE, $2, $1, NULL, true, false, $4 ); }
+| type tIDENTIFIER  '(' variables ')' '=' literal     {$$ = new zu::function_declaration_node(LINE, $2, $1, $7, true, false, $4 ); }
+| type tIDENTIFIER '!' '(' variables ')'              {$$ = new zu::function_declaration_node(LINE, $2, $1, NULL, false, false, $5);}
+| type tIDENTIFIER '!' '(' variables ')' '=' literal  {$$ = new zu::function_declaration_node(LINE, $2, $1, $8, false, false,$5);}
+| type tIDENTIFIER '?' '(' variables ')'              {$$ = new zu::function_declaration_node(LINE, $2, $1, NULL, true, true, $5 );}
+| type tIDENTIFIER '?' '(' variables')' '=' literal   {$$ = new zu::function_declaration_node(LINE, $2, $1, $8, true, true, $5 );}
+;
 
    
 /* 
@@ -179,7 +180,7 @@ declare_variable : type tIDENTIFIER                     { $$ = new zu::declare_v
    Inicializaçao de variaveis. 
 */    
 assign_variable : declare_variable                      { $$ = $1; }
-                | declare_variable '=' expr             { $$ = new zu::assignment_node(LINE, $1, $3 ); }
+                | declare_variable '=' expr             { $$ = new zu::assignment_node(LINE, $1, $3/*, false*/); }
                 ;
                 
 /* 
@@ -246,7 +247,7 @@ expr : literal                         { $$ = $1;}
      
      | variable_expr                   { $$ = $1;}
      | '(' expr ')'                    { $$ = $2; }
-     | lval '=' expr                   { $$ = new zu::assignment_node(LINE, $1, $3); }
+     | lval '=' expr                   { $$ = new zu::assignment_node(LINE, $1, $3/*, false*/); }
      ;
 
 /*

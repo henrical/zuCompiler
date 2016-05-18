@@ -15,17 +15,18 @@ namespace zu {
     basic_type *_type;
     cdk::expression_node *_literal; // A function literal is an expression that represents the default return value of the function.
     cdk::sequence_node *_arguments;
+    const std::string *_identifier;
     
     bool _isLocal;
     bool _isImported;
     
       
   public:
-    inline function_declaration_node(int lineno, basic_type * type, cdk::expression_node *literal, bool is_local, bool is_imported, cdk::sequence_node *arguments) :
+    inline function_declaration_node(int lineno, std::string *identifier , basic_type * type, cdk::expression_node *literal, bool is_local, bool is_imported, cdk::sequence_node *arguments) :
         cdk::basic_node(lineno), _type(type), _literal(literal), _arguments(arguments), _isLocal(is_local), _isImported(is_imported)
     {   
+        _identifier = identifier;
 //        std::cout << "FUNCTION_DECLARATION node." << std::endl; 
-
     }
 
   public:
@@ -47,6 +48,11 @@ namespace zu {
     inline cdk::sequence_node* arguments()
     {
         return _arguments;
+    }
+    
+    inline std::string identifier()
+    {
+        return *_identifier;
     }
     
     inline bool isLocal()

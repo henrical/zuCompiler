@@ -110,9 +110,12 @@ void zu::type_checker::do_assignment_node(zu::assignment_node * const node, int 
   // (this is caused by Zu not having explicit variable declarations)
   const std::string &id = node->lvalue()->value();
   if (!_symtab.find(id)) {
-    _symtab.insert(id, std::make_shared<zu::symbol>(new basic_type(4, basic_type::TYPE_INT), id, -1)); // put in the symbol table
+      int offset = -1;
+      bool defined = true;
+    _symtab.insert(id, std::make_shared<zu::symbol>(new basic_type(4, basic_type::TYPE_INT), id, defined, offset)); // put in the symbol table
   }
 
+  
   node->lvalue()->accept(this, lvl + 2);
   if (node->lvalue()->type()->name() != basic_type::TYPE_INT)
     throw std::string("wrong type in left argument of assignment expression");
@@ -237,13 +240,31 @@ void zu::type_checker::do_declare_var_node(zu::declare_var_node * const node, in
    }
    
    const std::string &id = node->value();
+   bool local = node->isLocal();
    
-//     if(!node->isLocal()){ // GLOBAL VARIABLE !!!!
-//       _symtab.insert(id, std::make_shared<zu::symbol>(node->type(),false,node->isLocal(),node->isImport(),node->isConst(),""));
-//     }
-//     else{ // LOCAL VARIABLE !!!
-      _symtab.insert( id, std::make_shared<zu::symbol>(node->type(),id,-1));
-//     }
+   
+    if(!local)
+    { // GLOBAL VARIABLE 
+      bool defined = false;
+      bool imported = node->isImport();
+      std::string label = ""; //atribuir label mais tarde
+      _symtab.insert(id, std::make_shared<zu::symbol>(node->type(),
+                                                      id,
+                                                      defined,
+                                                      imported,
+                                                      label)
+                    );
+    }
+    else
+    { // LOCAL VARIABLE
+        bool defined = false;
+        int offset = -1;
+        _symtab.insert( id, std::make_shared<zu::symbol>(node->type(),
+                                                         id,
+                                                         defined,
+                                                         offset)
+                      );
+    }
 }
 
 //---------------------------------------------------------------------------
@@ -252,30 +273,73 @@ void zu::type_checker::do_function_declaration_node(zu::function_declaration_nod
     if(node->type() == NULL){
         node->type(new basic_type(0,basic_type::TYPE_VOID));
     }
+    
+    std::string id = node->identifier();
+    
+    bool defined = false; //nao definida, por enquanto.
+    bool imported = node->isImported();
+    
+//     cdk::sequence_node* arguments = node->arguments();
+//     size_t num_args = arguments->size();
+//     std::vector<basic_type*> arguments_type = std::vector<basic_type*>();
+//     
+//     std::vector<var
+    
+    //TODO: o sequence node que guarda os argumentos esta a guardar basic_nodes...
+    //resolver isto no yacc para para poder fazer a verificação de tipos
+    
+    _symtab.insert(id, std::make_shared<zu::symbol>(node->type(),
+                                                      id,
+                                                      defined,
+                                                      imported,
+                                                      nullptr )//FIXME)
+                  );
+
+    
+
+    
 }
 
-void zu::type_checker::do_function_definition_node(zu::function_definition_node * const node, int lvl) {
+void zu::type_checker::do_function_definition_node(zu::function_definition_node * const node, int lvl) 
+{    
+    std::shared_ptr<zu::symbol> symbol = _symtab.find(node->declaration()->identifier());
     
-//     if(_symtab.find_local(node->value())!= nullptr)
-//     {
-//         throw std::string("Error: \"" + node->value() + "\" already defined in this scope.");
-//     }
-//    
-//    const std::string &id = node->value();
+    if(symbol->defined()){ //someone defined this already
+        throw std::string("Error: multiple definitions for function \"" + node->declaration()->identifier() + "\".");
+    }
+    else
+    {
+        symbol->defined(true);
+        
+    }
 }
 
 //---------------------------------------------------------------------------
 void zu::type_checker::do_function_call_node(zu::function_call_node * const node, int lvl) {
+    std::shared_ptr<zu::symbol> symbol = _symtab.find(node->functionIdentifier());
+    if (symbol == nullptr ) {
+        throw std::string("Error: attempt to call inexistant function \"" + node->functionIdentifier());
+    }
+    
     //FIXME
+//       if(node->arguments() != NULL){
+// 	variable_node * arg;
+// 	for (size_t i = 0; i < node->arguments()->size(); i++) {
+// 	  arg = (variable_node*) node->arguments()->node(i);
+// 	  arg->type(getBasicType((symbol->getArgsTypes())[i]));
+// 	}
+//       } 
+
+//   node->type(s->type());
 }
 
 //---------------------------------------------------------------------------
 void zu::type_checker::do_memory_allocation_node(zu::memory_allocation_node * const node, int lvl) {
-    //FIXME
+    //FIXME: unused node.
 }
 
 //---------------------------------------------------------------------------
 void zu::type_checker::do_memory_address_node(zu::memory_address_node * const node, int lvl)
 {
-    //FIXME
+    processUnaryExpression(node, lvl + 4);
 }

@@ -11,12 +11,16 @@ namespace zu {
    */
   class assignment_node: public cdk::expression_node {
     zu::lvalue_node *_lvalue;
-    cdk::expression_node *_rvalue;
+    cdk::expression_node *_rvalue;  
+    
+//     bool _newVariable;
 
   public:
-    inline assignment_node(int lineno, zu::lvalue_node *lvalue, cdk::expression_node *rvalue) :
-        cdk::expression_node(lineno), _lvalue(lvalue), _rvalue(rvalue) {
+    inline assignment_node(int lineno, zu::lvalue_node *lvalue, cdk::expression_node *rvalue/*, bool new_var*/) :
+        cdk::expression_node(lineno), _lvalue(lvalue), _rvalue(rvalue) 
+    {
 //             std::cout << "ASSIGNMENT node." << std::endl;
+//         _newVariable = new_var;
     }
 
   public:
@@ -26,6 +30,11 @@ namespace zu {
     inline cdk::expression_node *rvalue() {
       return _rvalue;
     }
+    
+//     inline bool newVariable()
+//     {
+//         return _newVariable;
+//     }
 
     void accept(basic_ast_visitor *sp, int level) {
       sp->do_assignment_node(this, level);
