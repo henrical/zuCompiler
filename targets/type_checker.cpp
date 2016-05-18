@@ -321,7 +321,7 @@ void zu::type_checker::do_function_call_node(zu::function_call_node * const node
         throw std::string("Error: attempt to call inexistant function \"" + node->functionIdentifier());
     }
     
-    //FIXME
+    //FIXME: verificar tipos dos argumentos
 //       if(node->arguments() != NULL){
 // 	variable_node * arg;
 // 	for (size_t i = 0; i < node->arguments()->size(); i++) {
