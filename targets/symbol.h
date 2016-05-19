@@ -23,7 +23,10 @@ namespace zu {
       bool _local;
       bool _import ;
       
-      int _offset;
+      int _offset = -1;   //offset -1 é invalido, porque a memoria esta alinhada ao byte, logo os offsets sao 
+                          //sempre multiplos de 4 (so negativos ou positivos)
+                          //de qualquer maneira, o offset nao e relevante numa variavel global, porque é acedida
+                          //com uma label.
       
       std::string _label;
       
@@ -52,10 +55,6 @@ namespace zu {
           _type(type),  _name(name)
         {  
             _defined = defined;
-            _offset = -1; //offset -1 é invalido, porque a memoria esta alinhada ao byte, logo os offsets sao 
-                          //sempre multiplos de 4 (so negativos, ou tambem positivos?)
-                          //de qualquer maneira, o offset nao e relevante numa variavel global, porque é acedida
-                          //com uma label.
             _label = label;
             _import = import;
             
@@ -97,6 +96,17 @@ namespace zu {
       }
       inline long value(long v) {
         return _value = v;
+      }
+      
+      
+      inline void offset(int offset)
+      {
+            _offset = offset;
+      }
+      
+      inline int offset()
+      {
+            return _offset;
       }
       
       inline void defined(bool defined)

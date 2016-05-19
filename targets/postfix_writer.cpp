@@ -138,7 +138,15 @@ void zu::postfix_writer::do_rvalue_node(zu::rvalue_node * const node, int lvl) {
 
 void zu::postfix_writer::do_lvalue_node(zu::lvalue_node * const node, int lvl) {
   CHECK_TYPES(_compiler, _symtab, node);
-  // simplified generation: all variables are global
+  // simplified generation: all variables are global 
+  // FIXME
+  // verificar find_local
+  // se estiver, usar LOCAL
+  // se nao estiver no find_local, procurar find
+  // se estiver em find 
+  // |
+  // |
+  // v
   _pf.ADDR(node->value());
 }
 

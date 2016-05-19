@@ -163,53 +163,52 @@ void zu::stack_counter::do_block_node(zu::block_node * const node, int lvl) {
 
 //---------------------------------------------------------------------------
 void zu::stack_counter::do_break_node(zu::break_node * const node, int lvl) {
-    //FIXME
 }
 
 //---------------------------------------------------------------------------
 void zu::stack_counter::do_return_node(zu::return_node * const node, int lvl) {
-    //FIXME
 }
 
 //---------------------------------------------------------------------------
 void zu::stack_counter::do_identifier_node(zu::identifier_node * const node, int lvl) {
-    //FIXME
 }
 
 //---------------------------------------------------------------------------
 void zu::stack_counter::do_index_node(zu::index_node * const node, int lvl) {
-    //FIXME
 }
 
 //---------------------------------------------------------------------------
 void zu::stack_counter::do_and_node(zu::and_node * const node, int lvl) {
-    //FIXME
 }
 
 //---------------------------------------------------------------------------
 void zu::stack_counter::do_or_node(zu::or_node * const node, int lvl) {
-    //FIXME
 }
 
 //---------------------------------------------------------------------------
 void zu::stack_counter::do_identity_node(zu::identity_node * const node, int lvl) {
-    //FIXME
 }
 
 //---------------------------------------------------------------------------
 void zu::stack_counter::do_symmetry_node(zu::symmetry_node * const node, int lvl) {
-    //FIXME
 }
 
 //---------------------------------------------------------------------------
 void zu::stack_counter::do_declare_var_node(zu::declare_var_node * const node, int lvl)
 {
      _bytes += node->type()->size();
+     
+     const std::string &id = node->value();
+     std::shared_ptr<zu::symbol> symbol = _symtab.find(id);
+     
+    if(symbol != nullptr)
+    {
+        symbol->offset(_bytes);
+    }
 }
 
 //---------------------------------------------------------------------------
 void zu::stack_counter::do_function_declaration_node(zu::function_declaration_node * const node, int lvl) {
-    //FIXME
 }
 
 //---------------------------------------------------------------------------
