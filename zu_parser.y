@@ -113,9 +113,9 @@ instruction : expr ';'                  { $$ = new zu::evaluation_node(LINE, $1)
 /*  
     Instruções condicionais.
 */
-cond_instruction : expr '#' instruction                  { $$ = new zu::if_else_node(LINE, $1, $3, NULL);}
-                 | expr '?' instruction                  { $$ = new zu::if_else_node(LINE, $1, $3, NULL);}
-                 | expr '?' instruction ':' instruction  { $$ = new zu::if_else_node(LINE, $1, $3, $5); }
+cond_instruction : '[' expr ']' '#' instruction                  { $$ = new zu::if_else_node(LINE, $2, $5, NULL);}
+                 | '[' expr ']' '?' instruction                  { $$ = new zu::if_else_node(LINE, $2, $5, NULL);}
+                 | '[' expr ']' '?' instruction ':' instruction  { $$ = new zu::if_else_node(LINE, $2, $5, $7); }
                  ;
  
 /*
@@ -219,6 +219,10 @@ string_literal : tLSTRING                              { $$ = new cdk::string_no
 
 /*
     Expressoes.
+    
+    Falta:  
+        reserva de memoria: i.e "<#>int_pointer = [5]"
+                            aloca 5 inteiros
 */
 expr : literal                         { $$ = $1;}
      
@@ -247,6 +251,7 @@ expr : literal                         { $$ = $1;}
      | variable_expr                   { $$ = $1;}
      | '(' expr ')'                    { $$ = $2; }
      | lval '=' expr                   { $$ = new zu::assignment_node(LINE, $1, $3/*, false*/); }
+/*      | '[' expr ']'                    { memory reservation node} */
      ;
 
 /*

@@ -1,11 +1,11 @@
-// $Id: stack_counter.cpp,v 1.1 2016/05/19 14:22:54 ist175838 Exp $ -*- c++ -*-
+// $Id: stack_counter.cpp,v 1.2 2016/05/19 14:28:38 ist175838 Exp $ -*- c++ -*-
 #include <string>
 #include <sstream>
 #include "targets/type_checker.h"
 #include "targets/stack_counter.h"
 #include "ast/all.h"  // all.h is automatically generated
 
-#define DEBUG 1
+#define DEBUG 0
 
 void debugPrint(std::string msg)
 {
