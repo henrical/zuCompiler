@@ -1,8 +1,10 @@
-// $Id: postfix_writer.cpp,v 1.16 2016/05/18 20:32:57 ist175838 Exp $ -*- c++ -*-
+// $Id: postfix_writer.cpp,v 1.17 2016/05/19 12:27:59 ist175838 Exp $ -*- c++ -*-
 #include <string>
 #include <sstream>
+#include <cstring>
 #include "targets/type_checker.h"
 #include "targets/postfix_writer.h"
+#include "targets/stack_counter.h"
 #include "ast/all.h"  // all.h is automatically generated
 
 //---------------------------------------------------------------------------
@@ -292,7 +294,38 @@ void zu::postfix_writer::do_function_declaration_node(zu::function_declaration_n
 
 //---------------------------------------------------------------------------
 void zu::postfix_writer::do_function_definition_node(zu::function_definition_node * const node, int lvl) {
-    //FIXME
+    
+    std::string func_identifier = node->declaration()->identifier();
+    std::string func_final_name;
+    
+    if(func_identifier == "zu")
+    {
+        func_final_name = "_main";
+    }
+    else if(func_identifier =="_main")
+    {
+        func_final_name = "zu";
+    }
+    else
+    {
+        func_final_name = func_identifier;
+    }
+    
+    bool local_function = node->declaration()->isLocal();
+    
+    if(!local_function)
+    {
+        _pf.GLOBAL(func_final_name, _pf.FUNC());
+    }
+    
+    stack_counter *sc = new stack_counter(_compiler, _symtab);
+
+    node->accept(sc, lvl + 2);
+    size_t local_size = sc->getByteSize();
+    
+    size_t return_size = node->declaration()->type()->size();
+    
+    _pf.ENTER(local_size + return_size);
 }
 
 //---------------------------------------------------------------------------

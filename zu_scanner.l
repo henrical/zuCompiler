@@ -1,7 +1,7 @@
 %option c++ yyclass="zu_scanner" outfile="zu_scanner.cpp"
 %option stack noyywrap yylineno 8bit
 %{ 
-/* $Id: zu_scanner.l,v 1.13 2016/05/18 22:01:59 ist175838 Exp $ */
+/* $Id: zu_scanner.l,v 1.14 2016/05/19 12:27:59 ist175838 Exp $ */
 // make relevant includes before including the parser's tab file
 #include <string>
 #include "math.h"
