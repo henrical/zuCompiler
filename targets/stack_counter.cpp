@@ -1,16 +1,21 @@
-// $Id: stack_counter.cpp,v 1.17 2016/05/19 12:27:59 ist175838 Exp $ -*- c++ -*-
+// $Id: stack_counter.cpp,v 1.1 2016/05/19 14:22:54 ist175838 Exp $ -*- c++ -*-
 #include <string>
 #include <sstream>
 #include "targets/type_checker.h"
 #include "targets/stack_counter.h"
 #include "ast/all.h"  // all.h is automatically generated
 
-#define DEBUG 0
+#define DEBUG 1
 
 void debugPrint(std::string msg)
 {
     if(DEBUG == 1)
       std::cout << "[Stack counter] " << msg << std::endl;  
+}
+void debugPrint(size_t size)
+{
+    if(DEBUG == 1)
+      std::cout << "[Stack counter] " << size << std::endl;  
 }
 
 //---------------------------------------------------------------------------
@@ -212,7 +217,10 @@ void zu::stack_counter::do_function_definition_node(zu::function_definition_node
     debugPrint("Going into function definition node...");
     node->block()->accept(this, lvl + 4);
     
-    std::cout << "Counting allocated bytes inside function definition." << std::endl << "Result: " << _bytes + node->declaration()->type()->size() << "." << std::endl;
+    debugPrint("Counting allocated bytes inside function definition.");
+    debugPrint("Result: ");
+    size_t final_size = node->declaration()->type()->size() + _bytes;
+    debugPrint(final_size);
 }
 
 //---------------------------------------------------------------------------

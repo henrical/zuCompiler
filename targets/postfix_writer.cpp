@@ -1,4 +1,4 @@
-// $Id: postfix_writer.cpp,v 1.17 2016/05/19 12:27:59 ist175838 Exp $ -*- c++ -*-
+// $Id: postfix_writer.cpp,v 1.18 2016/05/19 14:22:54 ist175838 Exp $ -*- c++ -*-
 #include <string>
 #include <sstream>
 #include <cstring>

@@ -1,4 +1,4 @@
-// $Id: for_node.h,v 1.4 2016/05/18 20:32:57 ist175838 Exp $ -*- c++ -*-
+// $Id: for_node.h,v 1.5 2016/05/19 14:22:54 ist175838 Exp $ -*- c++ -*-
 #ifndef __ZU_FORNODE_H__
 #define __ZU_FORNODE_H__
 
