@@ -121,9 +121,17 @@ void zu::postfix_writer::do_eq_node(cdk::eq_node * const node, int lvl) {
 //---------------------------------------------------------------------------
 
 void zu::postfix_writer::do_rvalue_node(zu::rvalue_node * const node, int lvl) {
-  CHECK_TYPES(_compiler, _symtab, node);
-  node->lvalue()->accept(this, lvl);
-  _pf.LOAD(); //FIXME: depends on type size
+    CHECK_TYPES(_compiler, _symtab, node);
+    node->lvalue()->accept(this, lvl);
+  
+    if(node->lvalue()->type()->name() == basic_type::TYPE_DOUBLE)
+    {
+        //Load 8 bytes;
+        _pf.DLOAD();
+    }
+    else
+        //Load 4 bytes.
+        _pf.LOAD();
 }
 
 //---------------------------------------------------------------------------
@@ -317,7 +325,11 @@ void zu::postfix_writer::do_function_definition_node(zu::function_definition_nod
     {
         _pf.GLOBAL(func_final_name, _pf.FUNC());
     }
+
+    _pf.LABEL(func_final_name);
     
+    
+    //compute size of local vars for ENTER instruction
     stack_counter *sc = new stack_counter(_compiler, _symtab);
 
     node->accept(sc, lvl + 2);
@@ -326,6 +338,37 @@ void zu::postfix_writer::do_function_definition_node(zu::function_definition_nod
     size_t return_size = node->declaration()->type()->size();
     
     _pf.ENTER(local_size + return_size);
+    
+    
+    if(node->declaration()->returnValue() != nullptr)
+    {
+//         if(node->declaration()->type()->name() == basic_type::TYPE_DOUBLE)
+//         {
+//             
+//         }
+//         else
+//         {    
+            node->declaration()->returnValue()->accept(this, lvl + 2);
+            _pf.LOCA(-return_size);
+//         }
+            
+    }
+    
+    node->block()->accept(this, lvl + 2);
+    
+    //Carrega valor de retorno
+    _pf.LOCAL(-return_size);
+    _pf.LOAD();
+    
+    if(node->declaration()->type()->name() == basic_type::TYPE_DOUBLE)
+        //Faz POP do valor de retorno para o registo ST0 (registo de 64bits para double vals)
+        _pf.DPOP(); 
+    else
+        //Faz POP do valor de retorno para o registo EAX
+        _pf.POP();
+        
+    _pf.LEAVE();
+    _pf.RET();
 }
 
 //---------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-// $Id: stack_counter.cpp,v 1.2 2016/05/19 14:28:38 ist175838 Exp $ -*- c++ -*-
+// $Id: stack_counter.cpp,v 1.3 2016/05/19 19:55:10 ist175838 Exp $ -*- c++ -*-
 #include <string>
 #include <sstream>
 #include "targets/type_checker.h"
@@ -15,7 +15,7 @@ void debugPrint(std::string msg)
 void debugPrint(size_t size)
 {
     if(DEBUG == 1)
-      std::cout << "[Stack counter] " << size << std::endl;  
+      std::cout << "[Stack counter] Size: " << size << std::endl;  
 }
 
 //---------------------------------------------------------------------------

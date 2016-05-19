@@ -40,7 +40,7 @@ namespace zu {
         _type = type;
     }
     
-    inline cdk::expression_node* literal()
+    inline cdk::expression_node* returnValue()
     {
         return _literal;
     }
