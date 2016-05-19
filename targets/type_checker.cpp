@@ -1,4 +1,4 @@
-// $Id: type_checker.cpp,v 1.15 2016/05/18 20:32:57 ist175838 Exp $ -*- c++ -*-
+// $Id: type_checker.cpp,v 1.16 2016/05/18 22:01:59 ist175838 Exp $ -*- c++ -*-
 #include <string>
 #include "targets/type_checker.h"
 #include "ast/all.h"  // automatically generated
@@ -126,6 +126,7 @@ void zu::type_checker::do_assignment_node(zu::assignment_node * const node, int 
            node->rvalue()->type()->name() == basic_type::TYPE_DOUBLE)
         {
             //converter valor a ser atribuido para inteiro.
+            std::cout << "Conversao double para int." << std::endl;
             node->rvalue()->type(new basic_type(4, basic_type::TYPE_INT));     
         }
         else

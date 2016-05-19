@@ -1,7 +1,7 @@
 %option c++ yyclass="zu_scanner" outfile="zu_scanner.cpp"
 %option stack noyywrap yylineno 8bit
 %{ 
-/* $Id: zu_scanner.l,v 1.12 2016/05/16 17:30:33 ist175838 Exp $ */
+/* $Id: zu_scanner.l,v 1.13 2016/05/18 22:01:59 ist175838 Exp $ */
 // make relevant includes before including the parser's tab file
 #include <string>
 #include "math.h"
@@ -192,7 +192,7 @@ FLOAT_SCI_NOTATION_2        [0-9]*\.[0-9]+([Ee][-+]?[0-9]+)
                                                 }
 
 
-[&-+\|?!*:()=;,{}\[\]\/]                                  return *yytext;
+[&+\|?!*:()-=;,{}\[\]\/]                                  return *yytext;
 
 {WHITESPACE}                                    ; /* ignore whitespace */
 
