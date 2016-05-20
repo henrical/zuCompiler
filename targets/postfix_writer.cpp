@@ -204,6 +204,8 @@ void zu::postfix_writer::do_evaluation_node(zu::evaluation_node * const node, in
 void zu::postfix_writer::do_print_node(zu::print_node * const node, int lvl) {
   CHECK_TYPES(_compiler, _symtab, node);
   
+//   std::cout << "constructing print node!" << std::endl;
+  
   node->argument()->accept(this, lvl); // determine the value to print
   if (node->argument()->type()->name() == basic_type::TYPE_INT) {
     _pf.CALL("printi");
@@ -212,6 +214,10 @@ void zu::postfix_writer::do_print_node(zu::print_node * const node, int lvl) {
   else if (node->argument()->type()->name() == basic_type::TYPE_STRING) {
     _pf.CALL("prints");
     _pf.TRASH(4); // delete the printed value's address
+  }
+  else if (node->argument()->type()->name() == basic_type::TYPE_DOUBLE) {
+    _pf.CALL("printd");
+    _pf.TRASH(8); // delete the printed value's address
   }
   else {
     std::cerr << "ERROR: CANNOT HAPPEN!" << std::endl;
@@ -254,7 +260,14 @@ void zu::postfix_writer::do_continue_node(zu::continue_node * const node, int lv
 
 //---------------------------------------------------------------------------
 void zu::postfix_writer::do_block_node(zu::block_node * const node, int lvl) {
-    //FIXME
+    _symtab.push();
+    if(node->declarations() != NULL){
+        node->declarations()->accept(this,lvl + 1);
+    }
+    if(node->instructions() != NULL){
+        node->instructions()->accept(this, lvl +1);
+    }
+    _symtab.pop();
 }
 
 //---------------------------------------------------------------------------
