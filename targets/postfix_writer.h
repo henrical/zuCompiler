@@ -1,4 +1,4 @@
-// $Id: postfix_writer.h,v 1.14 2016/05/18 20:32:57 ist175838 Exp $ -*- c++ -*-
+// $Id: postfix_writer.h,v 1.15 2016/05/20 12:41:49 ist175838 Exp $ -*- c++ -*-
 #ifndef __ZU_SEMANTICS_PF_WRITER_H__
 #define __ZU_SEMANTICS_PF_WRITER_H__
 
@@ -18,11 +18,15 @@ namespace zu {
     cdk::symbol_table<zu::symbol> &_symtab;
     cdk::basic_postfix_emitter &_pf;
     int _lbl;
+    
+    std::vector<std::string> _imports;
 
   public:
     postfix_writer(std::shared_ptr<cdk::compiler> compiler, cdk::symbol_table<zu::symbol> &symtab,
                    cdk::basic_postfix_emitter &pf) :
         basic_ast_visitor(compiler), _symtab(symtab), _pf(pf), _lbl(0) {
+            
+            _imports = std::vector<std::string>();
     }
 
   public:
@@ -41,6 +45,24 @@ namespace zu {
       return oss.str();
     }
 
+    inline void addImport(std::string import_name)
+    {
+       for(auto import : _imports){
+	if(import == import_name){
+	  return;
+	}
+      }
+      
+      _imports.push_back(import_name);
+    }
+
+    inline void externImports(){
+      for(auto &import : _imports){
+	_pf.EXTERN(import);
+      }
+    }
+    
+    
   public:
     void do_sequence_node(cdk::sequence_node * const node, int lvl);
 

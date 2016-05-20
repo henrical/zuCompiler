@@ -100,8 +100,10 @@ instructions: instruction               { $$ = new cdk::sequence_node(LINE, $1);
     Instruções.
 */
 instruction : expr ';'                  { $$ = new zu::evaluation_node(LINE, $1);}
-            | expr '!'                  {/*impressao sem newline*/$$ = new zu::print_node(LINE, $1, false);}
-            | expr tNLPRINT             {/*impressao com newline*/ $$ = new zu::print_node(LINE, $1, true);}
+/*             | '@' '!'                   { $$ = new zu::print_node(LINE, new zu::read_node(LINE, true), false);} */
+            | expr '!'                  { $$ = new zu::print_node(LINE, $1, false);}
+/*             | '@' tNLPRINT              { $$ = new zu::print_node(LINE, new zu::print_node(LINE, true), false);} */
+            | expr tNLPRINT             { $$ = new zu::print_node(LINE, new zu::read_node(LINE, true), true);}
             | tBREAK                    { $$ = new zu::break_node(LINE);}
             | tCONTINUE                 { $$ = new zu::continue_node(LINE);}
             | tRETURN                   { $$ = new zu::return_node(LINE);}
@@ -251,6 +253,7 @@ expr : literal                         { $$ = $1;}
      | variable_expr                   { $$ = $1;}
      | '(' expr ')'                    { $$ = $2; }
      | lval '=' expr                   { $$ = new zu::assignment_node(LINE, $1, $3/*, false*/); }
+     | '@'                             { $$ = new zu::read_node(LINE,false);}
 /*      | '[' expr ']'                    { memory reservation node} */
      ;
 

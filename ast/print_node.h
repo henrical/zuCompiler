@@ -1,4 +1,4 @@
-// $Id: print_node.h,v 1.3 2016/05/18 20:32:57 ist175838 Exp $ -*- c++ -*-
+// $Id: print_node.h,v 1.4 2016/05/20 12:41:49 ist175838 Exp $ -*- c++ -*-
 #ifndef __ZU_PRINTNODE_H__
 #define __ZU_PRINTNODE_H__
 
@@ -22,6 +22,10 @@ namespace zu {
   public:
     inline cdk::expression_node *argument() {
       return _argument;
+    }
+    
+    inline bool newline() {
+      return _newline;
     }
 
     void accept(basic_ast_visitor *sp, int level) {

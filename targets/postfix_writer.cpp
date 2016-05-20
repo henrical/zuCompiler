@@ -1,4 +1,4 @@
-// $Id: postfix_writer.cpp,v 1.18 2016/05/19 14:22:54 ist175838 Exp $ -*- c++ -*-
+// $Id: postfix_writer.cpp,v 1.20 2016/05/20 12:41:49 ist175838 Exp $ -*- c++ -*-
 #include <string>
 #include <sstream>
 #include <cstring>
@@ -208,14 +208,17 @@ void zu::postfix_writer::do_print_node(zu::print_node * const node, int lvl) {
   
   node->argument()->accept(this, lvl); // determine the value to print
   if (node->argument()->type()->name() == basic_type::TYPE_INT) {
+    addImport("printi");
     _pf.CALL("printi");
     _pf.TRASH(4); // delete the printed value
   }
   else if (node->argument()->type()->name() == basic_type::TYPE_STRING) {
+    addImport("prints");
     _pf.CALL("prints");
     _pf.TRASH(4); // delete the printed value's address
   }
   else if (node->argument()->type()->name() == basic_type::TYPE_DOUBLE) {
+    addImport("printd");
     _pf.CALL("printd");
     _pf.TRASH(8); // delete the printed value's address
   }
@@ -223,7 +226,13 @@ void zu::postfix_writer::do_print_node(zu::print_node * const node, int lvl) {
     std::cerr << "ERROR: CANNOT HAPPEN!" << std::endl;
     exit(1);
   }
-  _pf.CALL("println"); // print a newline
+
+  if(node->newline())
+  {    
+    addImport("println");
+    _pf.CALL("println"); // print a newline
+  }
+      
 }
 
 //---------------------------------------------------------------------------
@@ -242,10 +251,17 @@ void zu::postfix_writer::do_if_else_node(zu::if_else_node * const node, int lvl)
 //---------------------------------------------------------------------------
 
 void zu::postfix_writer::do_read_node(zu::read_node * const node, int lvl) {
-  CHECK_TYPES(_compiler, _symtab, node);
-  _pf.CALL("readi");
-  _pf.PUSH();
-  _pf.STORE();
+   CHECK_TYPES(_compiler, _symtab, node);
+    if(node->type()->name() == basic_type::TYPE_INT){
+        addImport("readi"); //add import to be added as EXTERN after main function
+        _pf.CALL("readi");
+        _pf.PUSH();
+    }
+    else{
+        addImport("readd"); //add import to be added as EXTERN after main function
+        _pf.CALL("readd");
+        _pf.DPUSH();
+  }
 }
 
 //---------------------------------------------------------------------------
@@ -297,7 +313,14 @@ void zu::postfix_writer::do_and_node(zu::and_node * const node, int lvl) {
 
 //---------------------------------------------------------------------------
 void zu::postfix_writer::do_or_node(zu::or_node * const node, int lvl) {
-    //FIXME
+    CHECK_TYPES(_compiler, _symtab, node);
+    int lbl1 = ++_lbl;
+    node->left()->accept(this,lvl);
+    _pf.DUP();
+    _pf.JNZ(mklbl(lbl1));
+    node->right()->accept(this, lvl);
+    _pf.OR();
+    _pf.LABEL(mklbl(lbl1)); 
 }
 
 //---------------------------------------------------------------------------
@@ -390,6 +413,11 @@ void zu::postfix_writer::do_function_definition_node(zu::function_definition_nod
         
     _pf.LEAVE();
     _pf.RET();
+    
+    if(func_final_name == "_main"){ //a way to ensure that only one function uses calls extern function
+        externImports(); //extern all imports used
+//         externUnDefSymbols(); //extern all symbols undefined 
+    }
 }
 
 //---------------------------------------------------------------------------

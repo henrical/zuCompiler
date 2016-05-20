@@ -9,21 +9,28 @@ namespace zu {
   /**
    * Class for describing read nodes.
    */
-  class read_node: public cdk::basic_node {
-    zu::lvalue_node *_argument;
+  class read_node: public cdk::expression_node {
+      
+      bool _printed;
       
   public:
-    inline read_node(int lineno, lvalue_node *argument) :
-        cdk::basic_node(lineno), _argument(argument) {
+    inline read_node(int lineno, bool printed) :
+        cdk::expression_node(lineno){
 //             std::cout << "READ node." << std::endl;
-
+        _printed = printed;
     }
 
   public:
-    inline zu::lvalue_node *argument()
+      
+    inline void printed(bool value)
     {
-        return _argument;
+        _printed = value;
     }
+      
+    inline bool printed()
+    {
+        return _printed;
+    }  
       
     void accept(basic_ast_visitor *sp, int level) {
       sp->do_read_node(this, level);
